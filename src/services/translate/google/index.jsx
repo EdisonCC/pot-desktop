@@ -1,15 +1,9 @@
 import { fetch } from '@tauri-apps/api/http';
-import { store } from '../../../utils/store';
 
 export async function translate(text, from, to, options = {}) {
     const { config } = options;
 
-    let translateConfig = (await store.get('google')) ?? {};
-    if (config !== undefined) {
-        translateConfig = config;
-    }
-
-    let { custom_url } = translateConfig;
+    let { custom_url } = config;
 
     if (custom_url === undefined || custom_url === '') {
         custom_url = 'https://translate.google.com';
@@ -42,14 +36,19 @@ export async function translate(text, from, to, options = {}) {
         let result = res.data;
         // 词典模式
         if (result[1]) {
-            let target = { pronunciations: [], explanations: [], association: [], sentence: [] };
+            let target = { pronunciations: [], explanations: [], associations: [], sentence: [] };
             // 发音
             if (result[0][1][3]) {
                 target.pronunciations.push({ symbol: result[0][1][3], voice: '' });
             }
             // 释义
             for (let i of result[1]) {
-                target.explanations.push({ trait: i[0], explains: i[1] });
+                target.explanations.push({
+                    trait: i[0],
+                    explains: i[2].map((x) => {
+                        return x[0];
+                    }),
+                });
             }
             // 例句
             if (result[13]) {

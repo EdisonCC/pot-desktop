@@ -1,4 +1,5 @@
 pub fn init_lang_detect() {
+    // https://crates.io/crates/lingua
     use lingua::{Language, LanguageDetectorBuilder};
     let languages = vec![
         Language::Chinese,
@@ -19,6 +20,10 @@ pub fn init_lang_detect() {
         Language::Malay,
         Language::Hindi,
         Language::Mongolian,
+        Language::Bokmal,
+        Language::Nynorsk,
+        Language::Persian,
+        Language::Ukrainian,
     ];
     let detector = LanguageDetectorBuilder::from_languages(&languages).build();
     let _ = detector.detect_language_of("Hello Language");
@@ -45,6 +50,9 @@ pub fn lang_detect(text: &str) -> Result<&str, ()> {
         Language::Malay,
         Language::Hindi,
         Language::Mongolian,
+        Language::Bokmal,
+        Language::Nynorsk,
+        Language::Persian,
     ];
     let detector = LanguageDetectorBuilder::from_languages(&languages).build();
     if let Some(lang) = detector.detect_language_of(text) {
@@ -67,8 +75,12 @@ pub fn lang_detect(text: &str) -> Result<&str, ()> {
             Language::Malay => Ok("ms"),
             Language::Hindi => Ok("hi"),
             Language::Mongolian => Ok("mn_cy"),
+            Language::Bokmal => Ok("nb_no"),
+            Language::Nynorsk => Ok("nn_no"),
+            Language::Persian => Ok("fa"),
+            Language::Ukrainian => Ok("uk"),
         }
     } else {
-        return Ok("");
+        return Ok("en");
     }
 }

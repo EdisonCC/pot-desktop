@@ -2,18 +2,20 @@ import { Code, Card, CardBody, Button, Progress, Skeleton } from '@nextui-org/re
 import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
 import React, { useEffect, useState } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
+import { relaunch } from '@tauri-apps/api/process';
 import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { listen } from '@tauri-apps/api/event';
 import ReactMarkdown from 'react-markdown';
 
-import { useToastStyle } from '../../hooks';
+import { useConfig, useToastStyle } from '../../hooks';
 import { osType } from '../../utils/env';
 
 let unlisten = 0;
 let eventId = 0;
 
 export default function Updater() {
+    const [transparent] = useConfig('transparent', true);
     const [downloaded, setDownloaded] = useState(0);
     const [total, setTotal] = useState(0);
     const [body, setBody] = useState('');
@@ -54,7 +56,7 @@ export default function Updater() {
 
     return (
         <div
-            className={`bg-background/90 h-screen ${
+            className={`${transparent ? 'bg-background/90' : 'bg-background'} h-screen ${
                 osType === 'Linux' && 'rounded-[10px] border-1 border-default-100'
             }`}
         >
@@ -153,10 +155,11 @@ export default function Updater() {
                     isLoading={downloaded !== 0}
                     isDisabled={downloaded !== 0}
                     color='primary'
-                    onClick={() => {
+                    onPress={() => {
                         installUpdate().then(
                             () => {
-                                toast.success(t('updater.installed'), { style: toastStyle });
+                                toast.success(t('updater.installed'), { style: toastStyle, duration: 10000 });
+                                relaunch();
                             },
                             (e) => {
                                 toast.error(e.toString(), { style: toastStyle });
@@ -173,7 +176,7 @@ export default function Updater() {
                 <Button
                     variant='flat'
                     color='danger'
-                    onClick={() => {
+                    onPress={() => {
                         appWindow.close();
                     }}
                 >

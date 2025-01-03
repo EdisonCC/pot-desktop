@@ -23,6 +23,7 @@ fn get_daemon_window() -> Window {
                 tauri::WindowUrl::App("daemon.html".into()),
             )
             .title("Daemon")
+            .additional_browser_args("--disable-web-security")
             .visible(false)
             .build()
             .unwrap()
@@ -65,9 +66,7 @@ fn build_window(label: &str, title: &str) -> (Window, bool) {
         }
     };
     let current_monitor = get_current_monitor(mouse_position.x, mouse_position.y);
-    let dpi = current_monitor.scale_factor();
-    let physical_position = current_monitor.position();
-    let position: tauri::LogicalPosition<f64> = physical_position.to_logical(dpi);
+    let position = current_monitor.position();
 
     let app_handle = APP.get().unwrap();
     match app_handle.get_window(label) {
@@ -83,22 +82,11 @@ fn build_window(label: &str, title: &str) -> (Window, bool) {
                 label,
                 tauri::WindowUrl::App("index.html".into()),
             )
-            .position(position.x, position.y)
+            .position(position.x.into(), position.y.into())
+            .additional_browser_args("--disable-web-security")
             .focused(true)
             .title(title)
             .visible(false);
-
-            match get("transparent") {
-                Some(v) => {
-                    if v.as_bool().unwrap() {
-                        builder = builder.transparent(true);
-                    }
-                }
-                None => {
-                    set("transparent", true);
-                    builder = builder.transparent(true);
-                }
-            }
 
             #[cfg(target_os = "macos")]
             {
@@ -108,24 +96,15 @@ fn build_window(label: &str, title: &str) -> (Window, bool) {
             }
             #[cfg(not(target_os = "macos"))]
             {
-                builder = builder.decorations(false);
+                builder = builder.transparent(true).decorations(false);
             }
             let window = builder.build().unwrap();
 
             if label != "screenshot" {
                 #[cfg(not(target_os = "linux"))]
                 set_shadow(&window, true).unwrap_or_default();
-
-                #[cfg(target_os = "macos")]
-                {
-                    use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
-                    apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).expect(
-                        "Unsupported platform! 'apply_vibrancy' is only supported on macOS",
-                    );
-                }
             }
             let _ = window.current_monitor();
-            window.set_focus().unwrap();
             (window, false)
         }
     }
@@ -245,11 +224,13 @@ pub fn selection_translate() {
     use selection::get_text;
     // Get Selected Text
     let text = get_text();
+    if !text.trim().is_empty() {
+        let app_handle = APP.get().unwrap();
+        // Write into State
+        let state: tauri::State<StringWrapper> = app_handle.state();
+        state.0.lock().unwrap().replace_range(.., &text);
+    }
 
-    let app_handle = APP.get().unwrap();
-    // Write into State
-    let state: tauri::State<StringWrapper> = app_handle.state();
-    state.0.lock().unwrap().replace_range(.., &text);
     let window = translate_window();
     window.emit("new_text", text).unwrap();
 }

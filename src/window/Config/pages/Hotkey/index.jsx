@@ -124,6 +124,7 @@ export default function Hotkey() {
                             type='hotkey'
                             variant='bordered'
                             value={selectionTranslate}
+                            label={t('config.hotkey.set_hotkey')}
                             className='max-w-[50%]'
                             onKeyDown={(e) => {
                                 keyDown(e, setSelectionTranslate);
@@ -137,7 +138,7 @@ export default function Hotkey() {
                                     size='sm'
                                     variant='flat'
                                     className={`${selectionTranslate === '' && 'hidden'}`}
-                                    onClick={() => {
+                                    onPress={() => {
                                         registerHandler('hotkey_selection_translate', selectionTranslate);
                                     }}
                                 >
@@ -154,6 +155,7 @@ export default function Hotkey() {
                             type='hotkey'
                             variant='bordered'
                             value={inputTranslate}
+                            label={t('config.hotkey.set_hotkey')}
                             className='max-w-[50%]'
                             onKeyDown={(e) => {
                                 keyDown(e, setInputTranslate);
@@ -167,7 +169,7 @@ export default function Hotkey() {
                                     size='sm'
                                     variant='flat'
                                     className={`${inputTranslate === '' && 'hidden'}`}
-                                    onClick={() => {
+                                    onPress={() => {
                                         registerHandler('hotkey_input_translate', inputTranslate);
                                     }}
                                 >
@@ -184,6 +186,7 @@ export default function Hotkey() {
                             type='hotkey'
                             variant='bordered'
                             value={ocrRecognize}
+                            label={t('config.hotkey.set_hotkey')}
                             className='max-w-[50%]'
                             onKeyDown={(e) => {
                                 keyDown(e, setOcrRecognize);
@@ -197,7 +200,7 @@ export default function Hotkey() {
                                     size='sm'
                                     variant='flat'
                                     className={`${ocrRecognize === '' && 'hidden'}`}
-                                    onClick={() => {
+                                    onPress={() => {
                                         registerHandler('hotkey_ocr_recognize', ocrRecognize);
                                     }}
                                 >
@@ -214,6 +217,7 @@ export default function Hotkey() {
                             type='hotkey'
                             variant='bordered'
                             value={ocrTranslate}
+                            label={t('config.hotkey.set_hotkey')}
                             className='max-w-[50%]'
                             onKeyDown={(e) => {
                                 keyDown(e, setOcrTranslate);
@@ -227,7 +231,7 @@ export default function Hotkey() {
                                     size='sm'
                                     variant='flat'
                                     className={`${ocrTranslate === '' && 'hidden'}`}
-                                    onClick={() => {
+                                    onPress={() => {
                                         registerHandler('hotkey_ocr_translate', ocrTranslate);
                                     }}
                                 >

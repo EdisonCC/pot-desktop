@@ -1,29 +1,46 @@
 import { fetch, Body } from '@tauri-apps/api/http';
-import { store } from '../../../utils/store';
+import { Language } from './info';
+import { defaultRequestArguments } from './Config';
 
-export async function translate(text, from, to, options = {}) {
-    const { config, setResult } = options;
+export async function translate(text, from, to, options) {
+    const { config, setResult, detect } = options;
 
-    let translateConfig = await store.get('openai');
-    if (config !== undefined) {
-        translateConfig = config;
-    }
-    let { service, requestPath, model, apiKey, stream, systemPrompt, userPrompt } = translateConfig;
+    let { service, requestPath, model, apiKey, stream, promptList, requestArguments } = config;
 
     if (!/https?:\/\/.+/.test(requestPath)) {
         requestPath = `https://${requestPath}`;
     }
-    if (systemPrompt !== '') {
-        systemPrompt = systemPrompt.replaceAll('$text', text).replaceAll('$from', from).replaceAll('$to', to);
-    } else {
-        systemPrompt =
-            'You are a professional translation engine, please translate the text into a colloquial, professional, elegant and fluent content, without the style of machine translation. You must only translate the text content, never interpret it.';
+    const apiUrl = new URL(requestPath);
+
+    // in openai like api, /v1 is not required
+    if (service === 'openai' && !apiUrl.pathname.endsWith('/chat/completions')) {
+        // not openai like, populate completion endpoint
+        apiUrl.pathname += apiUrl.pathname.endsWith('/') ? '' : '/';
+        apiUrl.pathname += 'v1/chat/completions';
     }
-    if (userPrompt !== '') {
-        userPrompt = userPrompt.replaceAll('$text', text).replaceAll('$from', from).replaceAll('$to', to);
-    } else {
-        userPrompt = `Translate into ${to}:\n"""\n${text}\n"""`;
+
+    // 兼容旧版
+    if (promptList === undefined) {
+        promptList = [
+            {
+                role: 'system',
+                content:
+                    'You are a professional translation engine, please translate the text into a colloquial, professional, elegant and fluent content, without the style of machine translation. You must only translate the text content, never interpret it.',
+            },
+            { role: 'user', content: `Translate into $to:\n"""\n$text\n"""` },
+        ];
     }
+
+    promptList = promptList.map((item) => {
+        return {
+            ...item,
+            content: item.content
+                .replaceAll('$text', text)
+                .replaceAll('$from', from)
+                .replaceAll('$to', to)
+                .replaceAll('$detect', Language[detect]),
+        };
+    });
 
     const headers =
         service === 'openai'
@@ -35,22 +52,16 @@ export async function translate(text, from, to, options = {}) {
                   'Content-Type': 'application/json',
                   'api-key': apiKey,
               };
-    let body = {
-        temperature: 0,
+    const body = {
+        ...JSON.parse(requestArguments ?? defaultRequestArguments),
         stream: stream,
-        top_p: 1,
-        frequency_penalty: 1,
-        presence_penalty: 1,
-        messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
-        ],
+        messages: promptList,
     };
     if (service === 'openai') {
         body['model'] = model;
     }
     if (stream) {
-        const res = await window.fetch(requestPath, {
+        const res = await window.fetch(apiUrl.href, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(body),
@@ -107,7 +118,7 @@ export async function translate(text, from, to, options = {}) {
             throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
         }
     } else {
-        let res = await fetch(requestPath, {
+        let res = await fetch(apiUrl.href, {
             method: 'POST',
             headers: headers,
             body: Body.json(body),

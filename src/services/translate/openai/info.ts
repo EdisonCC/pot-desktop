@@ -28,4 +28,12 @@ export enum Language {
     mn_mo = 'Mongolian',
     mn_cy = 'Mongolian(Cyrillic)',
     km = 'Khmer',
+    nb_no = 'Norwegian Bokmål',
+    nn_no = 'Norwegian Nynorsk',
+    fa = 'Persian',
+    sv = 'Swedish',
+    pl = 'Polish',
+    nl = 'Dutch',
+    uk = 'Ukrainian',
+    he = 'Hebrew',
 }

@@ -1,5 +1,6 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 import { removeDir, BaseDirectory } from '@tauri-apps/api/fs';
+import { open as openInBrowser } from '@tauri-apps/api/shell';
 import toast, { Toaster } from 'react-hot-toast';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
@@ -7,11 +8,12 @@ import { open } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api';
 import React, { useState } from 'react';
 
+import { createServiceInstanceKey } from '../../../../../utils/service_instance';
 import { useToastStyle } from '../../../../../hooks';
 import { emit } from '@tauri-apps/api/event';
 
 export default function SelectPluginModal(props) {
-    const { isOpen, onOpenChange, setConfigName, onConfigOpen, pluginType, pluginList, deleteService } = props;
+    const { isOpen, onOpenChange, setCurrentConfigKey, onConfigOpen, pluginType, pluginList, deleteService } = props;
     const [installing, setInstalling] = useState(false);
     const { t } = useTranslation();
     const toastStyle = useToastStyle();
@@ -28,6 +30,18 @@ export default function SelectPluginModal(props) {
                     <>
                         <ModalHeader>{t('config.service.add_service')}</ModalHeader>
                         <ModalBody>
+                            {Object.keys(pluginList).length === 0 && (
+                                <Button
+                                    fullWidth
+                                    variant='flat'
+                                    onPress={() => {
+                                        openInBrowser('http://pot-app.com/plugin.html');
+                                    }}
+                                >
+                                    <div className='w-full'>{t('config.service.view_plugin_list')}</div>
+                                </Button>
+                            )}
+
                             {Object.keys(pluginList).map((x) => {
                                 return (
                                     <div
@@ -38,7 +52,7 @@ export default function SelectPluginModal(props) {
                                             fullWidth
                                             className='mr-[8px]'
                                             onPress={() => {
-                                                setConfigName(x);
+                                                setCurrentConfigKey(createServiceInstanceKey(x));
                                                 onConfigOpen();
                                             }}
                                             startContent={
@@ -98,7 +112,6 @@ export default function SelectPluginModal(props) {
                                         if (selected !== null) {
                                             invoke('install_plugin', {
                                                 pathList: selected,
-                                                pluginType,
                                             }).then(
                                                 (count) => {
                                                     setInstalling(false);
@@ -125,7 +138,7 @@ export default function SelectPluginModal(props) {
                             <Button
                                 color='danger'
                                 variant='light'
-                                onClick={onClose}
+                                onPress={onClose}
                             >
                                 {t('common.cancel')}
                             </Button>

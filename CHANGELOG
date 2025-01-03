@@ -1,21 +1,11 @@
-## 2.2.0 (2023-09-09)
-
-### 注意：Windows 用户请以管理员权限运行 pot 之后再更新
-
-### Note: For Windows users, please run pot with administrator privileges before updating.
+## 3.0.6 (2024-10-29)
 
 ### New feature:
 
--   Support Edit History Item([`621f2eb`](https://github.com/pot-app/pot-desktop/commit/621f2eb99264440de49f61cc72a46b640df466f1)) (by @Pylogmon)
--   Add Translate History([`424dac9`](https://github.com/pot-app/pot-desktop/commit/424dac9a6681415ee7a9c874da54c75cda4514fa)) (by @Pylogmon)
--   Support Return Json From Plugin([`23c73bc`](https://github.com/pot-app/pot-desktop/commit/23c73bc6f0d1a2d9f04ce3818db5077e0823ab5c)) (by @Pylogmon)
+-   add builtin lingva service
+-   add support for hebrew
+-   improve ui translation
 
 ### Bugs fixed:
 
--   Tesseract Error Message([`6ab31bd`](https://github.com/pot-app/pot-desktop/commit/6ab31bd4c85db494e2b7a9e33f9d90befa97a04f)) (by @Pylogmon)
--   Do Not Copy Anything when ClipboardMonitor is on([`7c30180`](https://github.com/pot-app/pot-desktop/commit/7c3018055de8386c572567d18693b2f8f73863c2)) (by @Pylogmon)
--   Fix Style on Linux([`e564200`](https://github.com/pot-app/pot-desktop/commit/e5642002ec2fba52bd25cbde995b98b65a638cab)) (by @Pylogmon)
--   Text Disappears when Back Translation Twice([`d4c14ca`](https://github.com/pot-app/pot-desktop/commit/d4c14ca6eddf2e79c50496848018bd9234953049)) (by @Pylogmon)
--   Show Source text Twice([`516f301`](https://github.com/pot-app/pot-desktop/commit/516f3015cdd6908a83f0c9e420d66661437f2b81)) (by @Pylogmon)
--   Can't use Volcengine OCR([`79e153f`](https://github.com/pot-app/pot-desktop/commit/79e153f0ded7743a4379214d1355139d9fe212f8)) (by @Pylogmon)
--   OpenAI Custom Config not Read([`1dd79ba`](https://github.com/pot-app/pot-desktop/commit/1dd79bac11f516a457a76b1e5eec1f1716c54789)) (by @Pylogmon)
+-   builtin ecdict can not be save

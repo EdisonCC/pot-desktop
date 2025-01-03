@@ -23,6 +23,14 @@ export const languageList = [
     'hi',
     'km',
     'mn_cy',
+    'nb_no',
+    'nn_no',
+    'fa',
+    'sv',
+    'pl',
+    'nl',
+    'uk',
+    'he',
 ];
 
 // https://flagicons.lipis.dev/
@@ -49,4 +57,12 @@ export enum LanguageFlag {
     hi = 'in',
     km = 'kh',
     mn_cy = 'mn',
+    nb_no = 'no',
+    nn_no = 'no',
+    fa = 'ir',
+    sv = 'se',
+    pl = 'pl',
+    nl = 'nl',
+    uk = 'ua',
+    he = 'il',
 }

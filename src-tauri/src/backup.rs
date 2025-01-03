@@ -5,7 +5,7 @@ use reqwest_dav::{Auth, ClientBuilder, Depth};
 use std::io::Write;
 use walkdir::WalkDir;
 use zip::read::ZipArchive;
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 
 #[tauri::command(async)]
 pub async fn webdav(
@@ -17,19 +17,22 @@ pub async fn webdav(
 ) -> Result<String, Error> {
     // build a client
     let client = ClientBuilder::new()
-        .set_host(url)
+        .set_host(url.clone())
+        .set_auth(Auth::Basic(username.clone(), password.clone()))
+        .build()?;
+    client.mkcol("/pot-app").await.unwrap_or_default();
+    let client = ClientBuilder::new()
+        .set_host(format!("{}/pot-app", url.trim_end_matches("/")))
         .set_auth(Auth::Basic(username, password))
         .build()?;
-
-    client.mkcol("/pot-app").await?;
     match operate {
         "list" => {
-            let res = client.list("pot-app", Depth::Number(1)).await?;
+            let res = client.list("/", Depth::Number(1)).await?;
             let result = serde_json::to_string(&res)?;
             Ok(result)
         }
         "get" => {
-            let res = client.get(&format!("pot-app/{}", name.unwrap())).await?;
+            let res = client.get(&format!("/{}", name.unwrap())).await?;
             let data = res.bytes().await?;
             let mut config_dir_path = config_dir().unwrap();
             config_dir_path = config_dir_path.join("com.pot-app.desktop");
@@ -57,7 +60,8 @@ pub async fn webdav(
 
             let zip_file = std::fs::File::create(&zip_path)?;
             let mut zip = zip::ZipWriter::new(zip_file);
-            let options = FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+            let options =
+                SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
             zip.start_file("config.json", options)?;
             zip.write(&std::fs::read(&config_path)?)?;
             if database_path.exists() {
@@ -84,10 +88,7 @@ pub async fn webdav(
 
             zip.finish()?;
             match client
-                .put(
-                    &format!("pot-app/{}", name.unwrap()),
-                    std::fs::read(&zip_path)?,
-                )
+                .put(&format!("/{}", name.unwrap()), std::fs::read(&zip_path)?)
                 .await
             {
                 Ok(()) => return Ok("".to_string()),
@@ -97,7 +98,7 @@ pub async fn webdav(
             }
         }
 
-        "delete" => match client.delete(&format!("pot-app/{}", name.unwrap())).await {
+        "delete" => match client.delete(&format!("/{}", name.unwrap())).await {
             Ok(()) => return Ok("".to_string()),
             Err(e) => {
                 return Err(Error::Error(format!("WebDav Delete Error: {}", e).into()));
@@ -128,7 +129,8 @@ pub async fn local(operate: &str, path: String) -> Result<String, Error> {
 
             let zip_file = std::fs::File::create(&path)?;
             let mut zip = zip::ZipWriter::new(zip_file);
-            let options = FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+            let options =
+                SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
             zip.start_file("config.json", options)?;
             zip.write(&std::fs::read(&config_path)?)?;
             if database_path.exists() {
@@ -161,6 +163,39 @@ pub async fn local(operate: &str, path: String) -> Result<String, Error> {
             config_dir_path = config_dir_path.join("com.pot-app.desktop");
 
             let mut zip_file = std::fs::File::open(&path)?;
+            let mut zip = ZipArchive::new(&mut zip_file)?;
+            zip.extract(config_dir_path)?;
+            Ok("".to_string())
+        }
+        _ => {
+            return Err(Error::Error(
+                format!("Local Operate Error: {}", operate).into(),
+            ));
+        }
+    }
+}
+
+#[tauri::command(async)]
+pub async fn aliyun(operate: &str, path: String, url: String) -> Result<String, Error> {
+    match operate {
+        "put" => {
+            let _ = reqwest::Client::new()
+                .put(&url)
+                .body(std::fs::read(&path)?)
+                .send()
+                .await?;
+            Ok("".to_string())
+        }
+        "get" => {
+            let res = reqwest::Client::new().get(&url).send().await?;
+            let data = res.bytes().await?;
+            let mut config_dir_path = config_dir().unwrap();
+            config_dir_path = config_dir_path.join("com.pot-app.desktop");
+            let zip_path = config_dir_path.join("archive.zip");
+
+            let mut zip_file = std::fs::File::create(&zip_path)?;
+            zip_file.write_all(&data)?;
+            let mut zip_file = std::fs::File::open(&zip_path)?;
             let mut zip = ZipArchive::new(&mut zip_file)?;
             zip.extract(config_dir_path)?;
             Ok("".to_string())
