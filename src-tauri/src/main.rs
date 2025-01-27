@@ -16,7 +16,7 @@ mod updater;
 mod window;
 
 use backup::*;
-use clipboard::start_clipboard_monitor;
+use clipboard::*;
 use cmd::*;
 use config::*;
 use hotkey::*;
@@ -67,7 +67,12 @@ fn main() {
         .setup(|app| {
             info!("============== Start App ==============");
             #[cfg(target_os = "macos")]
-            app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+            {
+                app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+                let trusted =
+                    macos_accessibility_client::accessibility::application_is_trusted_with_prompt();
+                info!("MacOS Accessibility Trusted: {}", trusted);
+            }
             // Global AppHandle
             APP.get_or_init(|| app.handle());
             // Init Config
@@ -96,7 +101,7 @@ fn main() {
             }
             match get("proxy_enable") {
                 Some(v) => {
-                    if v.as_bool().unwrap() {
+                    if v.as_bool().unwrap() && get("proxy_host").map_or(false, |host| !host.as_str().unwrap().is_empty()) {
                         let _ = set_proxy();
                     }
                 }
@@ -109,8 +114,17 @@ fn main() {
                     init_lang_detect();
                 }
             }
+            let clipboard_monitor = match get("clipboard_monitor") {
+                Some(v) => v.as_bool().unwrap(),
+                None => {
+                    set("clipboard_monitor", false);
+                    false
+                }
+            };
+            app.manage(ClipboardMonitorEnableWrapper(Mutex::new(
+                clipboard_monitor.to_string(),
+            )));
             start_clipboard_monitor(app.handle());
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -120,9 +134,10 @@ fn main() {
             get_base64,
             copy_img,
             system_ocr,
-            invoke_plugin,
             set_proxy,
             unset_proxy,
+            run_binary,
+            open_devtools,
             register_shortcut_by_frontend,
             update_tray,
             updater_window,
@@ -130,7 +145,9 @@ fn main() {
             lang_detect,
             webdav,
             local,
-            install_plugin
+            install_plugin,
+            font_list,
+            aliyun
         ])
         .on_system_tray_event(tray_event_handler)
         .build(tauri::generate_context!())

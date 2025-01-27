@@ -1,11 +1,11 @@
-<img width="200px" src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/public/icon.png" align="left"/>
+<img width="200px" src="public/icon.svg" align="left"/>
 
 # Pot (A cute translator)
 
 > A cross-platform translator application ([Telegram Group](https://t.me/pot_app))
 
 ![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
-![Tauri](https://img.shields.io/badge/Tauri-1.4.0-blue?logo=tauri)
+![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
 ![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?logo=javascript&logoColor=white)
 ![Rust](https://img.shields.io/badge/-Rust-orange?logo=rust&logoColor=white)
 ![Windows](https://img.shields.io/badge/-Windows-blue?logo=windows&logoColor=white)
@@ -16,13 +16,13 @@
 <hr/>
 <div align="center">
 
-<h3><a href='./README.md'>中文</a> | English</h3>
+<h3><a href='./README.md'>中文</a> | English | <a href='./README_KR.md'> 한글 </a></h3>
 
 <table>
 <tr>
-    <td> <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/1.png">
-    <td> <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/2.png">
-    <td> <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/3.png">
+    <td> <img src="asset/1.png">
+    <td> <img src="asset/2.png">
+    <td> <img src="asset/3.png">
 </table>
 
 # Table of Contents
@@ -36,6 +36,7 @@
 -   [Installation](#installation)
 -   [External Calls](#external-calls)
 -   [Wayland Support](#wayland-support)
+-   [Internationalization](#internationalizationweblate)
 -   [Contributors](#contributors)
 -   [Thanks](#thanks)
 
@@ -45,15 +46,15 @@
 
 </div>
 
-| Translation by selection                                                           | Translate by input                                                                 | External calls                                                                           |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Select text and press the shortcut to translate                                    | Press shortcut to open translation window, translate by hitting Enter              | More efficient workflow by integrating other apps, see [External Calls](#external-calls) |
-| <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/eg1.gif"/> | <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/eg2.gif"/> | <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/eg3.gif"/>       |
+| Translation by selection                        | Translate by input                                                    | External calls                                                                           |
+| ----------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Select text and press the shortcut to translate | Press shortcut to open translation window, translate by hitting Enter | More efficient workflow by integrating other apps, see [External Calls](#external-calls) |
+| <img src="asset/eg1.gif"/>                      | <img src="asset/eg2.gif"/>                                            | <img src="asset/eg3.gif"/>                                                               |
 
-| Clipboard Listening                                                                                                          | Screenshot OCR                                                                     | Screenshot Translation                                                             |
-| ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Click the top left icon on any translation panel to start clipboard listening. Copied text will be translated automatically. | Press shortcut, select area to OCR                                                 | Press shortcut, select area to translate                                           |
-| <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/eg4.gif"/>                                           | <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/eg5.gif"/> | <img src="https://cdn.staticaly.com/gh/pot-app/pot-desktop/master/asset/eg6.gif"/> |
+| Clipboard Listening                                                                                                          | Screenshot OCR                     | Screenshot Translation                   |
+| ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ---------------------------------------- |
+| Click the top left icon on any translation panel to start clipboard listening. Copied text will be translated automatically. | Press shortcut, select area to OCR | Press shortcut, select area to translate |
+| <img src="asset/eg4.gif"/>                                                                                                   | <img src="asset/eg5.gif"/>         | <img src="asset/eg6.gif"/>               |
 
 <div align="center">
 
@@ -80,6 +81,9 @@
 ## Translation
 
 -   [x] [OpenAI](https://platform.openai.com/)
+-   [x] [ChatGLM](https://www.zhipuai.cn/)
+-   [x] [Gemini Pro](https://gemini.google.com/)
+-   [x] [Ollama](https://www.ollama.com/) (Offline)
 -   [x] [Ali Translate](https://www.aliyun.com/product/ai/alimt)
 -   [x] [Baidu Translate](https://fanyi.baidu.com/)
 -   [x] [Caiyun](https://fanyi.caiyunapp.com/)
@@ -87,18 +91,18 @@
 -   [x] [Tencent Interactive Translate](https://transmart.qq.com/)
 -   [x] [Volcengine Translate](https://translate.volcengine.com/)
 -   [x] [NiuTrans](https://niutrans.com/)
--   [x] [Lingva](https://github.com/thedaviddelta/lingva-translate)
 -   [x] [Google Translate](https://translate.google.com)
 -   [x] [Bing Translate](https://learn.microsoft.com/zh-cn/azure/cognitive-services/translator/)
 -   [x] [Bing Dictionary](https://www.bing.com/dict)
 -   [x] [DeepL](https://www.deepl.com/)
 -   [x] [Youdao](https://ai.youdao.com/)
 -   [x] [Cambridge Dictionary](https://dictionary.cambridge.org/)
--   [x] [MoJi Dictionary](https://www.mojidict.com/)
 -   [x] [Yandex](https://translate.yandex.com/)
--   [x] [Tatoeba](https://tatoeba.org/)
--   [x] [PALM2](https://ai.google/discover/palm2/)
--   [ ] More to come...
+-   [x] [Lingva](https://github.com/TheDavidDelta/lingva-translate) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-template))
+-   [x] [Tatoeba](https://tatoeba.org/) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-tatoeba))
+-   [x] [ECDICT](https://github.com/skywind3000/ECDICT) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-ecdict))
+
+More Services see [Plugin System](#plugin-system)
 
 ## Text Recognize
 
@@ -107,25 +111,33 @@
     -   [x] [Apple Vision Framework](https://developer.apple.com/documentation/vision/recognizing_text_in_images) on MacOS
     -   [x] [Tesseract OCR](https://github.com/tesseract-ocr) on Linux
 -   [x] [Tesseract.js](https://tesseract.projectnaptha.com/) (Offline)
--   [x] [PaddleOCR](https://github.com/xushengfeng/eSearch-OCR) (Offline)
 -   [x] [Baidu](https://ai.baidu.com/tech/ocr/general)
 -   [x] [Tencent](https://cloud.tencent.com/product/ocr-catalog)
--   [x] [OCR Space](http://ocr.space/)
 -   [x] [Volcengine](https://www.volcengine.com/product/OCR)
 -   [x] [iflytek](https://www.xfyun.cn/services/common-ocr)
 -   [x] [Tencent Image Translate](https://cloud.tencent.com/document/product/551/17232)
 -   [x] [Baidu Image Translate](https://fanyi-api.baidu.com/product/22)
 -   [x] [Simple LaTeX](https://simpletex.cn/)
--   [ ] More to come...
+-   [x] [OCRSpace](https://ocr.space/) ([Plugin](https://github.com/pot-app/pot-app-recognize-plugin-template))
+-   [x] [Rapid](https://github.com/RapidAI/RapidOcrOnnx) (Offline [Plugin](https://github.com/pot-app/pot-app-recognize-plugin-rapid))
+-   [x] [Paddle](https://github.com/hiroi-sora/PaddleOCR-json) (Offline [Plugin](https://github.com/pot-app/pot-app-recognize-plugin-paddle))
+
+More Services see [Plugin System](#plugin-system)
 
 ## Text-to-Speech
 
 -   [x] [Lingva](https://github.com/thedaviddelta/lingva-translate)
 
+More Services see [Plugin System](#plugin-system)
+
 ## Collection
 
 -   [x] [Anki](https://apps.ankiweb.net/)
--   [x] [Youdao Dictionary](https://dict.eudic.net/)
+-   [x] [Eudic](https://dict.eudic.net/)
+-   [x] [Youdao](https://www.youdao.com/) ([Plugin](https://github.com/pot-app/pot-app-collection-plugin-youdao))
+-   [x] [ShanBay](https://web.shanbay.com/web/main) ([Plugin](https://github.com/pot-app/pot-app-collection-plugin-shanbay))
+
+More Services see [Plugin System](#plugin-system)
 
 <div align="center">
 
@@ -137,13 +149,23 @@ The built-in services are limited. But you can expand the app's functionality th
 
 ## Install Plugin
 
-You can find plugins you need in the [pot-app-plugin-list](https://github.com/pot-app/pot-app-plugin-list) repo, and then go to the plugin repo to download it.
+You can find plugins you need in the [Plugin List](https://pot-app.com/plugin.html), and then go to the plugin repo to download it.
 
 The file extension of pot plugin is `.potext`. After downloading the `.potext` file, go to Preferences - Service Settings - Add External Plugin - Install External Plugin to select the corresponding `.potext` to install it. It will then be added to the service list and can be used like a built-in service.
 
+### Troubleshooting
+
+-   The specified module could not be found (Windows)
+
+    Errors like this occur because the system lacks C++ libraries，Go to [here](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022) download and install it.
+
+-   Not a valid Win32 application (Windows)
+
+    An error like this indicates that you did not download the plugin for the corresponding system or architecture. Go to the plugin repository and download the correct plugin to solve the problem.
+
 ## Develop Plugin
 
-The [Template](https://github.com/pot-app/pot-app-plugin-list/blob/main/README.md#templates) section in the [pot-app-plugin-list](https://github.com/pot-app/pot-app-plugin-list) repo provides plugin development templates for various plugins. Please check the corresponding template repo for specific documentation.
+The [Template](https://pot-app.com/en/plugin.html#template) section in the [Plugin List](https://pot-app.com/en/plugin.html) provides plugin development templates for various plugins. Please check the corresponding template repo for specific documentation.
 
 <div align="center">
 
@@ -162,7 +184,22 @@ winget install Pylogmon.pot
 ### Install Manually
 
 1. Download the installation package ending in `.exe` from the Latest [Release](https://github.com/pot-app/pot-desktop/releases/latest) page.
+
+    - 64-bit machine download `pot_{version}_x64-setup.exe`
+    - 32-bit machine download `pot_{version}_x86-setup.exe`
+    - arm64 machine download `pot_{version}_arm64-setup.exe`
+
 2. Double click the downloaded file to install it.
+
+### 故障排除
+
+-   There is no interface after startup, and there is no response when clicking the tray icon.
+
+    Check if WebView2 is uninstalled/disabled, if so, install WebView2 manually or restore it.
+
+    If the enterprise edition system is inconvenient to install or cannot install WebView2, please try to download the fix WebView2 version `pot_{version} at [Release](https://github.com/pot-app/pot-desktop/releases/latest) _{arch}_fix_webview2_runtime-setup.exe`
+
+    If the issue persists, please try starting in Windows 7 compatibility mode.
 
 ## MacOS
 
@@ -209,11 +246,15 @@ brew upgrade --cask pot
 
 ### Debian/Ubuntu
 
-We provide `AppImage` and `deb` packages for Linux.
+We provide `deb` packages for Linux.
 
 Please note that: There are two deb package, `universal` is based on `glibc2.28` and `openssl-1.1`, If the regular deb package can't run on your machine due to dependency problems, please download the `universal` package, Due to its low version dependency, it can run on most systems.
 
 ### Arch/Manjaro
+
+> [!WARNING]  
+> In newer version of [Webkit2Gtk](https://archlinux.org/packages/extra/x86_64/webkit2gtk) (2.42.0), Because Nvidia Proprietary drives are not fully implemented DMABUF, it will cause failure to start and crash.<br>
+> Please downgrade or add the `WEBKIT_DISABLE_DMABUF_RENDERER=1` environment variable to `/etc/environment` (or other places where environment variables are set) to turn off the use of DMABUF.
 
 1. View on [AUR](https://aur.archlinux.org/packages?O=0&K=pot-translation)
 
@@ -231,6 +272,15 @@ paru -S pot-translation # or pot-translation-bin or pot-translation-git
 sudo pacman -S pot-translation
 ```
 
+### Flatpak
+
+> [!WARNING]
+> The tray icon is missing in Flatpak version.
+
+<a href='https://flathub.org/apps/com.pot_app.pot'>
+    <img width='240' alt='Download on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+</a>
+
 <div align="center">
 
 # External Calls
@@ -244,7 +294,7 @@ Pot provides a complete HTTP interface for integration with other software. You 
 ```bash
 POST "/" => Translate given text (body is text to translate)
 GET "/config" => Open settings
-GET "/translate" => Translate given text (same as "/")
+POST "/translate" => Translate given text (same as "/")
 GET "/selection_translate" => Translate selected text
 GET "/input_translate" => Open input translation
 GET "/ocr_recognize" => Perform OCR on screenshot
@@ -347,6 +397,16 @@ windowrulev2 = move cursor 0 0, class:(pot), title:(Translator|PopClip|Screensho
 
 <div align="center">
 
+# Internationalization([Weblate](https://hosted.weblate.org/engage/pot-app/))
+
+[![](https://hosted.weblate.org/widget/pot-app/pot-desktop/svg-badge.svg)](https://hosted.weblate.org/engage/pot-app/)
+
+[![](https://hosted.weblate.org/widget/pot-app/pot-desktop/multi-auto.svg)](https://hosted.weblate.org/engage/pot-app/)
+
+</div>
+
+<div align="center">
+
 # Contributors
 
 </div>
@@ -361,7 +421,7 @@ Node.js >= 18.0.0
 
 pnpm >= 8.5.0
 
-Rust >= 1.69.0
+Rust >= 1.80.0
 
 ### Start compilation
 
@@ -381,7 +441,7 @@ Rust >= 1.69.0
 3. Install dependencies(Only Linux)
 
     ```bash
-    sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev libxcb1 libxrandr2 libdbus-1-3
+    sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev patchelf libxdo-dev libxcb1 libxrandr2 libdbus-1-3
     ```
 
 4. Development (Optional)
@@ -406,6 +466,5 @@ Rust >= 1.69.0
 -   [@uiYzzi](https://github.com/uiYzzi) Implementation ideas
 -   [@Lichenkass](https://github.com/Lichenkass) Maintaining the Deepin App Store.
 -   [Tauri](https://github.com/tauri-apps/tauri) A user-friendly GUI framework.
--   [eSearch-OCR](https://github.com/xushengfeng/eSearch-OCR) PaddleOCR Implementation
 
 <div align="center">

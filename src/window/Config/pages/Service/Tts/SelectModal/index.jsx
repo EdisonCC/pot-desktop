@@ -2,10 +2,11 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 
-import * as buildinServices from '../../../../../../services/tts';
+import { createServiceInstanceKey } from '../../../../../../utils/service_instance';
+import * as builtinServices from '../../../../../../services/tts';
 
 export default function SelectModal(props) {
-    const { isOpen, onOpenChange, setConfigName, onConfigOpen } = props;
+    const { isOpen, onOpenChange, setCurrentConfigKey, onConfigOpen } = props;
     const { t } = useTranslation();
 
     return (
@@ -19,24 +20,24 @@ export default function SelectModal(props) {
                     <>
                         <ModalHeader>{t('config.service.add_service')}</ModalHeader>
                         <ModalBody>
-                            {Object.keys(buildinServices).map((x) => {
+                            {Object.keys(builtinServices).map((x) => {
                                 return (
                                     <div key={x}>
                                         <Button
                                             fullWidth
                                             onPress={() => {
-                                                setConfigName(x);
+                                                setCurrentConfigKey(createServiceInstanceKey(x));
                                                 onConfigOpen();
                                             }}
                                             startContent={
                                                 <img
-                                                    src={buildinServices[x].info.icon}
+                                                    src={builtinServices[x].info.icon}
                                                     className='h-[24px] w-[24px] my-auto'
                                                 />
                                             }
                                         >
                                             <div className='w-full'>
-                                                {t(`services.tts.${buildinServices[x].info.name}.title`)}
+                                                {t(`services.tts.${builtinServices[x].info.name}.title`)}
                                             </div>
                                         </Button>
                                     </div>
@@ -47,7 +48,7 @@ export default function SelectModal(props) {
                             <Button
                                 color='danger'
                                 variant='light'
-                                onClick={onClose}
+                                onPress={onClose}
                             >
                                 {t('common.cancel')}
                             </Button>

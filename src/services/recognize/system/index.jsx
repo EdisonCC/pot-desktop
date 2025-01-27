@@ -1,4 +1,4 @@
-import { local_detect } from '../../translate/utils/lang_detect';
+import detect from '../../../utils/lang_detect';
 import { osType } from '../../../utils/env';
 import { invoke } from '@tauri-apps/api';
 import { Language } from './info';
@@ -26,6 +26,8 @@ export async function recognize(_, lang) {
         ms: 'msa',
         ar: 'ara',
         hi: 'hin',
+        uk: 'ukr',
+        he: 'heb',
     };
     const windowsLangMap = {
         auto: 'auto',
@@ -49,6 +51,8 @@ export async function recognize(_, lang) {
         ms: 'ms-MY',
         ar: 'ar-SA',
         hi: 'hi-IN',
+        uk: 'uk-UA',
+        he: 'he-IL',
     };
     const macOSLangMap = {
         auto: 'auto',
@@ -72,12 +76,14 @@ export async function recognize(_, lang) {
         ms: 'ms-MY',
         ar: 'ar-SA',
         hi: 'hi-IN',
+        uk: 'uk-UA',
+        he: 'he-IL',
     };
     let result = '';
     switch (osType) {
         case 'Linux':
             result = await invoke('system_ocr', { lang: linuxLangMap[lang] });
-            if (lang === Language.auto && (await local_detect(result)) === Language.zh_cn) {
+            if (lang === Language.auto && (await detect(result)) === Language.zh_cn) {
                 result = result.replaceAll(' ', '');
             } else {
                 if (lang === Language.zh_cn || lang === Language.zh_tw) {
@@ -90,10 +96,10 @@ export async function recognize(_, lang) {
             return result.trim();
         case 'Windows_NT':
             result = await invoke('system_ocr', { lang: windowsLangMap[lang] });
-            if (lang === Language.auto && (await local_detect(result)) === Language.zh_cn) {
+            if (lang === Language.auto && (await detect(result)) === Language.zh_cn) {
                 result = result.replaceAll(' ', '');
             } else {
-                if (lang === Language.zh_cn || lang === Language.zh_tw) {
+                if (lang === Language.zh_cn || lang === Language.zh_tw || lang === Language.ja) {
                     result = result.replaceAll(' ', '');
                 }
             }

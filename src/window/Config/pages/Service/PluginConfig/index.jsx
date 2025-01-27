@@ -1,24 +1,22 @@
-import { useTranslation } from 'react-i18next';
+import { INSTANCE_NAME_CONFIG_KEY } from '../../../../../utils/service_instance';
 import { Button, Input } from '@nextui-org/react';
-import toast, { Toaster } from 'react-hot-toast';
+import { DropdownTrigger } from '@nextui-org/react';
+import { DropdownMenu } from '@nextui-org/react';
+import { DropdownItem } from '@nextui-org/react';
+import { Dropdown } from '@nextui-org/react';
+import { useTranslation } from 'react-i18next';
 import { open } from '@tauri-apps/api/shell';
-import React, { useState } from 'react';
+import React from 'react';
 
-import { useConfig, useToastStyle } from '../../../../../hooks';
-import { invoke } from '@tauri-apps/api';
+import { useConfig } from '../../../../../hooks';
 
 export function PluginConfig(props) {
-    // const pluginList = useAtomValue(pluginListAtom);
-    const { updateServiceList, onClose, name, pluginType, pluginList } = props;
-    const [loading, setLoading] = useState(false);
-    const [pluginConfig, setPluginConfig] = useConfig(name, {}, { sync: false });
-
-    const toastStyle = useToastStyle();
+    const { instanceKey, updateServiceList, onClose, name, pluginList } = props;
+    const [pluginConfig, setPluginConfig] = useConfig(instanceKey, {}, { sync: false });
     const { t } = useTranslation();
 
     return (
         <>
-            <Toaster />
             <div className={'config-item'}>
                 <h3 className='my-auto select-none cursor-default'>{t('config.service.homepage')}</h3>
                 <Button
@@ -29,12 +27,87 @@ export function PluginConfig(props) {
                     {t('config.service.homepage')}
                 </Button>
             </div>
+            {pluginConfig && (
+                <div className='config-item'>
+                    <Input
+                        label={t('services.instance_name')}
+                        labelPlacement='outside-left'
+                        value={pluginConfig[INSTANCE_NAME_CONFIG_KEY] ?? pluginList[name].display}
+                        variant='bordered'
+                        classNames={{
+                            base: 'justify-between',
+                            label: 'text-[length:--nextui-font-size-medium]',
+                            mainWrapper: 'max-w-[50%]',
+                        }}
+                        onValueChange={(value) => {
+                            setPluginConfig({
+                                ...pluginConfig,
+                                [INSTANCE_NAME_CONFIG_KEY]: value,
+                            });
+                        }}
+                    />
+                </div>
+            )}
+
             {pluginList[name].needs.length === 0 ? (
                 <div>{t('services.no_need')}</div>
             ) : (
                 pluginList[name].needs.map((x) => {
                     return (
-                        pluginConfig && (
+                        pluginConfig &&
+                        (x.type ? (
+                            <div
+                                key={x.key}
+                                className={`config-item`}
+                            >
+                                <h3 className='my-auto select-none cursor-default'>{x.display}</h3>
+                                {x.type === 'input' && (
+                                    <Input
+                                        value={`${pluginConfig.hasOwnProperty(x.key) ? pluginConfig[x.key] : ''}`}
+                                        variant='bordered'
+                                        className='max-w-[50%]'
+                                        onValueChange={(value) => {
+                                            setPluginConfig({
+                                                ...pluginConfig,
+                                                [x.key]: value,
+                                            });
+                                        }}
+                                    />
+                                )}
+                                {x.type === 'select' && (
+                                    <Dropdown>
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant='bordered'
+                                                className='max-w-[50%]'
+                                            >
+                                                {
+                                                    x.options[
+                                                        pluginConfig.hasOwnProperty(x.key)
+                                                            ? pluginConfig[x.key]
+                                                            : Object.keys(x.options)[0]
+                                                    ]
+                                                }
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            aria-label={x.key}
+                                            className='max-h-[40vh] overflow-y-auto'
+                                            onAction={(key) => {
+                                                setPluginConfig({
+                                                    ...pluginConfig,
+                                                    [x.key]: key,
+                                                });
+                                            }}
+                                        >
+                                            {Object.keys(x.options).map((y) => {
+                                                return <DropdownItem key={y}>{x.options[y]}</DropdownItem>;
+                                            })}
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                )}
+                            </div>
+                        ) : (
                             <div
                                 key={x.key}
                                 className={`config-item`}
@@ -52,45 +125,19 @@ export function PluginConfig(props) {
                                     }}
                                 />
                             </div>
-                        )
+                        ))
                     );
                 })
             )}
 
             <div>
                 <Button
-                    isLoading={loading}
                     fullWidth
                     color='primary'
                     onPress={() => {
-                        if (Object.keys(pluginConfig).length !== 0) {
-                            setLoading(true);
-                            invoke('invoke_plugin', {
-                                name,
-                                pluginType,
-                                text: 'Hello',
-                                from: pluginList[name].language['auto'],
-                                to: pluginList[name].language['zh_cn'],
-                                base64: 'iVBORw0KGgoAAAANSUhEUgAAADsAAAAeCAYAAACSRGY2AAAAAXNSR0IArs4c6QAAArNJREFUWEftl19IU1Ecxz+O5uQiNTCJkNj0ZWhkSOyh7CEy0CWZQQoTWYgvk17KFAdr9GBBYGb/qD0oUpgSCZViGkTRQ/hwEVOYIIhlMF8kUjbGZGPFdGtrGvcWzTa79/Gec+79fb7fc36/38nQ6/Xf+E+eDAV2mzqdns6WtDNRqYP5UQ71D8i2RoGVLdW/mqg4K6287G3sqHtEdYEP8clrdpZXYdCCxzWE/dkHjp5poXa/AMEVZodvU+ea2/Dn0n2NnK8wYsgVQAWEAng+TfHiZTddy75NI83LtdBRfSS2xruIONKNNftccs9sFPbLkpqcXUCmei1At2uO3YU6CKnR7AhDLDJ204bdH4u/tKSdjkodmvCrEKz6A2iE9fWEVhAftmF1JwBnmxm0msjPinzHH2A1U42GFcSJZYzGJCaodVhYnRqgZngUCmw8rStC419gzOnA7iuio8HG8b3wccTC2clIkFkWhppPkKcK4H7bTev7cWbDQ5kHcZxqorpQAO8M929dp+eHPgJtNXepNajh6wx9j+9E3BeoONBCc7mOnCx18rJxFDYGYmbwson85Sm67nXSB9SXO7loFPCIDzj2anwtdOPhTpxlueB+h7W3BzF+w6pM9F8wYxACTPc30jAfHTTR22ymeMP78HicEMkqPX8Ku5kAMV6Ba/VOKvQJu4GIkCzx5sYlWuOOxE8CphcsbBQxjBOFXeD5VQftiekr2aUnOc4qsNvV2W12ZuVlYx9irxWrO82zMXLqbFz5WseVqLNlOnKyU7DOhkP/qx2Uysf05BLFJVvQQf1uUxHdmIY9Fq5UxfW5wQCezxK9sbYKx+mTGPMi/fRW9cbSd4rUnyH71pP6KNIRKrDSGqXnDMXZ9PRNOmrF2USNtFotXq+XYDAoLV8Kz5DlrAKbwg7+KrTvuhRWXxXeDuUAAAAASUVORK5CYII=',
-                                lang: pluginList[name].language['auto'],
-                                needs: pluginConfig,
-                            }).then(
-                                (_) => {
-                                    setLoading(false);
-                                    setPluginConfig(pluginConfig, true);
-                                    updateServiceList(name);
-                                    onClose();
-                                },
-                                (err) => {
-                                    setLoading(false);
-                                    toast.error(err.toString(), { style: toastStyle });
-                                }
-                            );
-                        } else {
-                            setPluginConfig(pluginConfig, true);
-                            updateServiceList(name);
-                            onClose();
-                        }
+                        setPluginConfig(pluginConfig, true);
+                        updateServiceList(instanceKey);
+                        onClose();
                     }}
                 >
                     {t('common.save')}

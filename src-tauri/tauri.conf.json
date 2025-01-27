@@ -8,7 +8,7 @@
     },
     "package": {
         "productName": "pot",
-        "version": "2.0.0"
+        "version": "3.0.6"
     },
     "tauri": {
         "allowlist": {
@@ -35,18 +35,27 @@
             "http": {
                 "all": true,
                 "request": true,
-                "scope": ["http://**", "https://**"]
+                "scope": [
+                    "http://**",
+                    "https://**"
+                ]
             },
             "os": {
                 "all": true
             },
             "protocol": {
                 "asset": true,
-                "assetScope": ["$CACHE/**", "$CONFIG/**"]
+                "assetScope": [
+                    "$CACHE/**",
+                    "$CONFIG/**"
+                ]
             },
             "fs": {
                 "all": true,
-                "scope": ["$APPCONFIG/**", "$APPCACHE/**"]
+                "scope": [
+                    "$APPCONFIG/**",
+                    "$APPCACHE/**"
+                ]
             },
             "dialog": {
                 "open": true,
@@ -71,23 +80,20 @@
                 "icons/icon.ico"
             ],
             "deb": {
-                "depends": ["libxdo-dev", "libxcb1", "libxrandr2", "tesseract-ocr"]
+                "depends": [
+                    "libxdo-dev",
+                    "libxcb1",
+                    "libxrandr2",
+                    "tesseract-ocr"
+                ]
             },
-            "windows": {
-                "certificateThumbprint": null,
-                "digestAlgorithm": "sha256",
-                "timestampUrl": "",
-                "webviewInstallMode": {
-                    "silent": true,
-                    "type": "embedBootstrapper"
-                },
-                "nsis": {
-                    "displayLanguageSelector": true,
-                    "installerIcon": "icons/icon.ico",
-                    "license": "../LICENSE",
-                    "installMode": "perMachine",
-                    "languages": ["SimpChinese", "TradChinese", "English"]
-                }
+            "rpm": {
+                "depends": [
+                    "libxdo-dev",
+                    "libxcb1",
+                    "libxrandr2",
+                    "tesseract-ocr"
+                ]
             },
             "macOS": {
                 "entitlements": null,
@@ -98,15 +104,16 @@
             }
         },
         "security": {
-            "csp": "default-src * data: ; img-src 'self' asset: https://asset.localhost data: ; style-src * 'unsafe-inline'; worker-src 'self' blob: ; script-src * 'unsafe-eval';",
-            "devCsp": "default-src * data: ; img-src 'self' asset: https://asset.localhost data: ; style-src * 'unsafe-inline'; worker-src 'self' blob: ; script-src * 'unsafe-eval';"
+            "csp": "default-src * data: ; img-src * 'self' asset: https: data: ; style-src * 'unsafe-inline'; worker-src 'self' blob: ; script-src * 'unsafe-eval';",
+            "devCsp": "default-src * data: ; img-src * 'self' asset: https: data: ; style-src * 'unsafe-inline'; worker-src 'self' blob: ; script-src * 'unsafe-eval';"
         },
         "windows": [
             {
                 "title": "Daemon",
                 "label": "daemon",
                 "visible": false,
-                "url": "daemon.html"
+                "url": "daemon.html",
+                "additionalBrowserArgs": "--disable-web-security"
             }
         ],
         "systemTray": {
@@ -116,7 +123,10 @@
         "updater": {
             "active": true,
             "dialog": false,
-            "endpoints": ["https://update.pot-app.com"],
+            "endpoints": [
+                "https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/updater/update.json",
+                "https://github.com/pot-app/pot-desktop/releases/download/updater/update.json"
+            ],
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVBRTQxQTNDQjM5QzQzM0EKUldRNlE1eXpQQnJrV21mM1Bram5LRlF6UDA3K0Jab2FYL2lZSWhXTE5McWs2NUdJS0dtYkd5VGMK"
         }
     }

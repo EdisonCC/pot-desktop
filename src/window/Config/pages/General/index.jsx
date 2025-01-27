@@ -25,30 +25,55 @@ let timer = null;
 
 export default function General() {
     const [autoStart, setAutoStart] = useState(false);
-    const [checkUpdate, setCheckUpdate] = useConfig('check_update', false);
+    const [fontList, setFontList] = useState(null);
+    const [checkUpdate, setCheckUpdate] = useConfig('check_update', true);
     const [serverPort, setServerPort] = useConfig('server_port', 60828);
     const [appLanguage, setAppLanguage] = useConfig('app_language', 'en');
     const [appTheme, setAppTheme] = useConfig('app_theme', 'system');
+    const [appFont, setAppFont] = useConfig('app_font', 'default');
+    const [appFallbackFont, setAppFallbackFont] = useConfig('app_fallback_font', 'default');
+    const [appFontSize, setAppFontSize] = useConfig('app_font_size', 16);
     const [transparent, setTransparent] = useConfig('transparent', true);
+    const [devMode, setDevMode] = useConfig('dev_mode', false);
     const [trayClickEvent, setTrayClickEvent] = useConfig('tray_click_event', 'config');
     const [proxyEnable, setProxyEnable] = useConfig('proxy_enable', false);
     const [proxyHost, setProxyHost] = useConfig('proxy_host', '');
-    const [proxyPort, setProxyPort] = useConfig('proxy_port', 0);
+    const [proxyPort, setProxyPort] = useConfig('proxy_port', '');
     const [proxyUsername, setProxyUsername] = useConfig('proxy_username', '');
-    const [proxyPassword, setProxy] = useConfig('proxy_password', '');
+    const [proxyPassword, setProxyPassword] = useConfig('proxy_password', '');
+    const [noProxy, setNoProxy] = useConfig('no_proxy', 'localhost,127.0.0.1');
     const { t, i18n } = useTranslation();
     const { setTheme } = useTheme();
     const toastStyle = useToastStyle();
 
     const languageName = {
-        en: 'English',
-        pt_br: 'Português (Brasil)',
         zh_cn: '简体中文',
+        zh_tw: '繁體中文',
+        en: 'English',
+        ja: '日本語',
+        ko: '한국어',
+        fr: 'Français',
+        es: 'Español',
+        ru: 'Русский',
+        de: 'Deutsch',
+        it: 'Italiano',
+        tr: 'Türkçe',
+        pt_pt: 'Português',
+        pt_br: 'Português (Brasil)',
+        nb_no: 'Norsk Bokmål',
+        nn_no: 'Norsk Nynorsk',
+        fa: 'فارسی',
+        uk: 'Українська',
+        ar: 'العربية',
+        he: 'עִבְרִית',
     };
 
     useEffect(() => {
         isEnabled().then((v) => {
             setAutoStart(v);
+        });
+        invoke('font_list').then((v) => {
+            setFontList(v);
         });
     }, []);
 
@@ -93,7 +118,19 @@ export default function General() {
                                 type='number'
                                 variant='bordered'
                                 value={serverPort}
+                                labelPlacement='outside-left'
                                 onValueChange={(v) => {
+                                    if (parseInt(v) !== serverPort) {
+                                        if (timer) {
+                                            clearTimeout(timer);
+                                        }
+                                        timer = setTimeout(() => {
+                                            toast.success(t('config.general.server_port_change'), {
+                                                duration: 3000,
+                                                style: toastStyle,
+                                            });
+                                        }, 1000);
+                                    }
                                     if (v === '') {
                                         setServerPort(0);
                                     } else if (parseInt(v) > 65535) {
@@ -103,16 +140,6 @@ export default function General() {
                                     } else {
                                         setServerPort(parseInt(v));
                                     }
-
-                                    if (timer) {
-                                        clearTimeout(timer);
-                                    }
-                                    timer = setTimeout(() => {
-                                        toast.success(t('config.general.server_port_change'), {
-                                            duration: 1000,
-                                            style: toastStyle,
-                                        });
-                                    }, 1000);
                                 }}
                                 className='max-w-[100px]'
                             />
@@ -136,6 +163,7 @@ export default function General() {
                                 </DropdownTrigger>
                                 <DropdownMenu
                                     aria-label='app language'
+                                    className='max-h-[40vh] overflow-y-auto'
                                     onAction={(key) => {
                                         setAppLanguage(key);
                                         i18n.changeLanguage(key);
@@ -143,22 +171,118 @@ export default function General() {
                                     }}
                                 >
                                     <DropdownItem
-                                        key='en'
-                                        startContent={<span className={`fi fi-${LanguageFlag.en}`} />}
-                                    >
-                                        English
-                                    </DropdownItem>
-                                    <DropdownItem
                                         key='zh_cn'
                                         startContent={<span className={`fi fi-${LanguageFlag.zh_cn}`} />}
                                     >
                                         简体中文
                                     </DropdownItem>
                                     <DropdownItem
+                                        key='zh_tw'
+                                        startContent={<span className={`fi fi-${LanguageFlag.zh_cn}`} />}
+                                    >
+                                        繁體中文
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='en'
+                                        startContent={<span className={`fi fi-${LanguageFlag.en}`} />}
+                                    >
+                                        English
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='ja'
+                                        startContent={<span className={`fi fi-${LanguageFlag.ja}`} />}
+                                    >
+                                        日本語
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='ko'
+                                        startContent={<span className={`fi fi-${LanguageFlag.ko}`} />}
+                                    >
+                                        한국어
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='fr'
+                                        startContent={<span className={`fi fi-${LanguageFlag.fr}`} />}
+                                    >
+                                        Français
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='de'
+                                        startContent={<span className={`fi fi-${LanguageFlag.de}`} />}
+                                    >
+                                        Deutsch
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='es'
+                                        startContent={<span className={`fi fi-${LanguageFlag.es}`} />}
+                                    >
+                                        Español
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='ru'
+                                        startContent={<span className={`fi fi-${LanguageFlag.ru}`} />}
+                                    >
+                                        Русский
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='it'
+                                        startContent={<span className={`fi fi-${LanguageFlag.it}`} />}
+                                    >
+                                        Italiano
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='tr'
+                                        startContent={<span className={`fi fi-${LanguageFlag.tr}`} />}
+                                    >
+                                        Türkçe
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='pt_pt'
+                                        startContent={<span className={`fi fi-${LanguageFlag.pt_pt}`} />}
+                                    >
+                                        Português
+                                    </DropdownItem>
+                                    <DropdownItem
                                         key='pt_br'
                                         startContent={<span className={`fi fi-${LanguageFlag.pt_br}`} />}
                                     >
                                         Português (Brasil)
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='nb_no'
+                                        startContent={<span className={`fi fi-${LanguageFlag.nb_no}`} />}
+                                    >
+                                        Norsk Bokmål
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='nn_no'
+                                        startContent={<span className={`fi fi-${LanguageFlag.nn_no}`} />}
+                                    >
+                                        Norsk Nynorsk
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='fa'
+                                        startContent={<span className={`fi fi-${LanguageFlag.fa}`} />}
+                                    >
+                                        فارسی
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='uk'
+                                        startContent={<span className={`fi fi-${LanguageFlag.uk}`} />}
+                                    >
+                                        Українська
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='ar'
+                                        startContent={<span className={`fi fi-${LanguageFlag.ar}`} />}
+                                    >
+                                        العربية
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key='he'
+                                        startContent={<span className={`fi fi-${LanguageFlag.he}`} />}
+                                    >
+                                        עִבְרִית
                                     </DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -202,6 +326,122 @@ export default function General() {
                             </Dropdown>
                         )}
                     </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto'>{t('config.general.app_font')}</h3>
+                        {appFont !== null && fontList !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button
+                                        variant='bordered'
+                                        style={{
+                                            fontFamily: appFont === 'default' ? 'sans-serif' : appFont,
+                                        }}
+                                    >
+                                        {appFont === 'default' ? t('config.general.default_font') : appFont}
+                                    </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='app font'
+                                    className='max-h-[50vh] overflow-y-auto'
+                                    onAction={(key) => {
+                                        document.documentElement.style.fontFamily = `"${
+                                            key === 'default' ? 'sans-serif' : key
+                                        }","${appFallbackFont === 'default' ? 'sans-serif' : appFallbackFont}"`;
+                                        setAppFont(key);
+                                    }}
+                                >
+                                    <DropdownItem
+                                        style={{ fontFamily: 'sans-serif' }}
+                                        key='default'
+                                    >
+                                        {t('config.general.default_font')}
+                                    </DropdownItem>
+                                    {fontList.map((x) => {
+                                        return (
+                                            <DropdownItem
+                                                style={{ fontFamily: x }}
+                                                key={x}
+                                            >
+                                                {x}
+                                            </DropdownItem>
+                                        );
+                                    })}
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto'>{t('config.general.app_fallback_font')}</h3>
+                        {appFallbackFont !== null && fontList !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button
+                                        variant='bordered'
+                                        style={{
+                                            fontFamily: appFallbackFont === 'default' ? 'sans-serif' : appFallbackFont,
+                                        }}
+                                    >
+                                        {appFallbackFont === 'default'
+                                            ? t('config.general.default_font')
+                                            : appFallbackFont}
+                                    </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='app font'
+                                    className='max-h-[50vh] overflow-y-auto'
+                                    onAction={(key) => {
+                                        document.documentElement.style.fontFamily = `"${
+                                            appFont === 'default' ? 'sans-serif' : appFont
+                                        }","${key === 'default' ? 'sans-serif' : key}"`;
+                                        setAppFallbackFont(key);
+                                    }}
+                                >
+                                    <DropdownItem
+                                        style={{ fontFamily: 'sans-serif' }}
+                                        key='default'
+                                    >
+                                        {t('config.general.default_font')}
+                                    </DropdownItem>
+                                    {fontList.map((x) => {
+                                        return (
+                                            <DropdownItem
+                                                style={{ fontFamily: x }}
+                                                key={x}
+                                            >
+                                                {x}
+                                            </DropdownItem>
+                                        );
+                                    })}
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.general.font_size.title')}</h3>
+                        {appFontSize !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant='bordered'>{t(`config.general.font_size.${appFontSize}`)}</Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='window position'
+                                    className='max-h-[50vh] overflow-y-auto'
+                                    onAction={(key) => {
+                                        document.documentElement.style.fontSize = `${key}px`;
+                                        setAppFontSize(key);
+                                    }}
+                                >
+                                    <DropdownItem key={10}>{t(`config.general.font_size.10`)}</DropdownItem>
+                                    <DropdownItem key={12}>{t(`config.general.font_size.12`)}</DropdownItem>
+                                    <DropdownItem key={14}>{t(`config.general.font_size.14`)}</DropdownItem>
+                                    <DropdownItem key={16}>{t(`config.general.font_size.16`)}</DropdownItem>
+                                    <DropdownItem key={18}>{t(`config.general.font_size.18`)}</DropdownItem>
+                                    <DropdownItem key={20}>{t(`config.general.font_size.20`)}</DropdownItem>
+                                    <DropdownItem key={24}>{t(`config.general.font_size.24`)}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
                     <div className={`config-item ${osType === 'Linux' && 'hidden'}`}>
                         <h3 className='my-auto'>{t('config.general.tray_click_event')}</h3>
                         {trayClickEvent !== null && (
@@ -228,19 +468,27 @@ export default function General() {
                             </Dropdown>
                         )}
                     </div>
-                    <div className='config-item'>
+                    <div className={`config-item ${osType === 'Darwin' && 'hidden'}`}>
                         <h3>{t('config.general.transparent')}</h3>
-                        <Switch
-                            isSelected={transparent}
-                            onValueChange={(v) => {
-                                setTransparent(v);
-
-                                toast.success(t('config.general.change_transparent'), {
-                                    duration: 1000,
-                                    style: toastStyle,
-                                });
-                            }}
-                        />
+                        {transparent !== null && (
+                            <Switch
+                                isSelected={transparent}
+                                onValueChange={(v) => {
+                                    setTransparent(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3>{t('config.general.dev_mode')}</h3>
+                        {devMode !== null && (
+                            <Switch
+                                isSelected={devMode}
+                                onValueChange={(v) => {
+                                    setDevMode(v);
+                                }}
+                            />
+                        )}
                     </div>
                 </CardBody>
             </Card>
@@ -253,10 +501,10 @@ export default function General() {
                                 isSelected={proxyEnable}
                                 onValueChange={async (v) => {
                                     if (v) {
-                                        if (proxyHost === '' || proxyPort === 0) {
+                                        if (proxyHost === '' || proxyPort === '') {
                                             setProxyEnable(false);
                                             toast.error(t('config.general.proxy_error'), {
-                                                duration: 1000,
+                                                duration: 3000,
                                                 style: toastStyle,
                                             });
                                             return;
@@ -280,7 +528,7 @@ export default function General() {
                                 type='url'
                                 variant='bordered'
                                 isRequired
-                                placeholder={t('config.general.proxy.host')}
+                                label={t('config.general.proxy.host')}
                                 startContent={<span>http://</span>}
                                 value={proxyHost}
                                 onValueChange={(v) => {
@@ -294,15 +542,13 @@ export default function General() {
                                 type='number'
                                 variant='bordered'
                                 isRequired
-                                placeholder={t('config.general.proxy.port')}
+                                label={t('config.general.proxy.port')}
                                 value={proxyPort}
                                 onValueChange={(v) => {
-                                    if (v === '') {
-                                        setProxyPort(0);
-                                    } else if (parseInt(v) > 65535) {
+                                    if (parseInt(v) > 65535) {
                                         setProxyPort(65535);
                                     } else if (parseInt(v) < 0) {
-                                        setProxyPort(0);
+                                        setProxyPort('');
                                     } else {
                                         setProxyPort(parseInt(v));
                                     }
@@ -317,7 +563,7 @@ export default function General() {
                                 type='text'
                                 variant='bordered'
                                 isDisabled
-                                placeholder={t('config.general.proxy.username')}
+                                label={t('config.general.proxy.username')}
                                 value={proxyUsername}
                                 onValueChange={(v) => {
                                     setProxyUsername(v);
@@ -330,12 +576,24 @@ export default function General() {
                                 type='password'
                                 variant='bordered'
                                 isDisabled
-                                placeholder={t('config.general.proxy.password')}
+                                label={t('config.general.proxy.password')}
                                 value={proxyPassword}
                                 onValueChange={(v) => {
-                                    setProxy(v);
+                                    setProxyPassword(v);
                                 }}
                                 className='ml-2'
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        {noProxy !== null && (
+                            <Input
+                                variant='bordered'
+                                label={t('config.general.proxy.no_proxy')}
+                                value={noProxy}
+                                onValueChange={(v) => {
+                                    setNoProxy(v);
+                                }}
                             />
                         )}
                     </div>

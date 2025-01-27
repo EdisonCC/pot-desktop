@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { useToastStyle } from '../../../../../hooks';
 import SelectPluginModal from '../SelectPluginModal';
 import { osType } from '../../../../../utils/env';
-import { useConfig } from '../../../../../hooks';
+import { useConfig, deleteKey } from '../../../../../hooks';
 import ServiceItem from './ServiceItem';
 import SelectModal from './SelectModal';
 import ConfigModal from './ConfigModal';
@@ -21,12 +21,15 @@ export default function Translate(props) {
     } = useDisclosure();
     const { isOpen: isSelectOpen, onOpen: onSelectOpen, onOpenChange: onSelectOpenChange } = useDisclosure();
     const { isOpen: isConfigOpen, onOpen: onConfigOpen, onOpenChange: onConfigOpenChange } = useDisclosure();
-    const [openConfigName, setOpenConfigName] = useState('deepl');
-    const [translateServiceList, setTranslateServiceList] = useConfig('translate_service_list', [
+    const [currentConfigKey, setCurrentConfigKey] = useState('deepl');
+    // now it's service instance list
+    const [translateServiceInstanceList, setTranslateServiceInstanceList] = useConfig('translate_service_list', [
         'deepl',
         'bing',
+        'lingva',
         'yandex',
         'google',
+        'ecdict',
     ]);
 
     const { t } = useTranslation();
@@ -40,24 +43,25 @@ export default function Translate(props) {
     };
     const onDragEnd = async (result) => {
         if (!result.destination) return;
-        const items = reorder(translateServiceList, result.source.index, result.destination.index);
-        setTranslateServiceList(items);
+        const items = reorder(translateServiceInstanceList, result.source.index, result.destination.index);
+        setTranslateServiceInstanceList(items);
     };
 
-    const deleteService = (name) => {
-        if (translateServiceList.length === 1) {
+    const deleteServiceInstance = (instanceKey) => {
+        if (translateServiceInstanceList.length === 1) {
             toast.error(t('config.service.least'), { style: toastStyle });
             return;
         } else {
-            setTranslateServiceList(translateServiceList.filter((x) => x !== name));
+            setTranslateServiceInstanceList(translateServiceInstanceList.filter((x) => x !== instanceKey));
+            deleteKey(instanceKey);
         }
     };
-    const updateServiceList = (name) => {
-        if (translateServiceList.includes(name)) {
+    const updateServiceInstanceList = (instanceKey) => {
+        if (translateServiceInstanceList.includes(instanceKey)) {
             return;
         } else {
-            const newList = [...translateServiceList, name];
-            setTranslateServiceList(newList);
+            const newList = [...translateServiceInstanceList, instanceKey];
+            setTranslateServiceInstanceList(newList);
         }
     };
 
@@ -80,8 +84,8 @@ export default function Translate(props) {
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                             >
-                                {translateServiceList !== null &&
-                                    translateServiceList.map((x, i) => {
+                                {translateServiceInstanceList !== null &&
+                                    translateServiceInstanceList.map((x, i) => {
                                         return (
                                             <Draggable
                                                 key={x}
@@ -96,11 +100,11 @@ export default function Translate(props) {
                                                         >
                                                             <ServiceItem
                                                                 {...provided.dragHandleProps}
-                                                                name={x}
                                                                 key={x}
+                                                                serviceInstanceKey={x}
                                                                 pluginList={pluginList}
-                                                                deleteService={deleteService}
-                                                                setConfigName={setOpenConfigName}
+                                                                deleteServiceInstance={deleteServiceInstance}
+                                                                setCurrentConfigKey={setCurrentConfigKey}
                                                                 onConfigOpen={onConfigOpen}
                                                             />
                                                             <Spacer y={2} />
@@ -120,7 +124,7 @@ export default function Translate(props) {
                         fullWidth
                         onPress={onSelectOpen}
                     >
-                        {t('config.service.add_buildin_service')}
+                        {t('config.service.add_builtin_service')}
                     </Button>
                     <Spacer x={2} />
                     <Button
@@ -134,24 +138,24 @@ export default function Translate(props) {
             <SelectPluginModal
                 isOpen={isSelectPluginOpen}
                 onOpenChange={onSelectPluginOpenChange}
-                setConfigName={setOpenConfigName}
+                setCurrentConfigKey={setCurrentConfigKey}
                 onConfigOpen={onConfigOpen}
                 pluginType='translate'
                 pluginList={pluginList}
-                deleteService={deleteService}
+                deleteService={deleteServiceInstance}
             />
             <SelectModal
                 isOpen={isSelectOpen}
                 onOpenChange={onSelectOpenChange}
-                setConfigName={setOpenConfigName}
+                setCurrentConfigKey={setCurrentConfigKey}
                 onConfigOpen={onConfigOpen}
             />
             <ConfigModal
-                name={openConfigName}
-                isOpen={isConfigOpen}
+                serviceInstanceKey={currentConfigKey}
                 pluginList={pluginList}
+                isOpen={isConfigOpen}
                 onOpenChange={onConfigOpenChange}
-                updateServiceList={updateServiceList}
+                updateServiceInstanceList={updateServiceInstanceList}
             />
         </>
     );

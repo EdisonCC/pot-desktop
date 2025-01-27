@@ -20,15 +20,18 @@ export default function Translate() {
     const [detectEngine, setDetectEngine] = useConfig('translate_detect_engine', 'baidu');
     const [autoCopy, setAutoCopy] = useConfig('translate_auto_copy', 'disable');
     const [incrementalTranslate, setIncrementalTranslate] = useConfig('incremental_translate', false);
+    const [historyDisable, setHistoryDisable] = useConfig('history_disable', false);
     const [dynamicTranslate, setDynamicTranslate] = useConfig('dynamic_translate', false);
     const [deleteNewline, setDeleteNewline] = useConfig('translate_delete_newline', false);
     const [rememberLanguage, setRememberLanguage] = useConfig('translate_remember_language', false);
+    // const [translateFontSize, setTranslateFontSize] = useConfig('translate_font_size', 16);
     const [windowPosition, setWindowPosition] = useConfig('translate_window_position', 'mouse');
     const [rememberWindowSize, setRememberWindowSize] = useConfig('translate_remember_window_size', false);
     const [hideSource, setHideSource] = useConfig('hide_source', false);
     const [hideLanguage, setHideLanguage] = useConfig('hide_language', false);
     const [hideWindow, setHideWindow] = useConfig('translate_hide_window', false);
-
+    const [closeOnBlur, setCloseOnBlur] = useConfig('translate_close_on_blur', true);
+    const [alwaysOnTop, setAlwaysOnTop] = useConfig('translate_always_on_top', false);
     const { t } = useTranslation();
 
     return (
@@ -114,7 +117,11 @@ export default function Translate() {
                                     }}
                                 >
                                     <DropdownItem key='baidu'>{t(`config.translate.baidu`)}</DropdownItem>
+                                    <DropdownItem key='tencent'>{t(`config.translate.tencent`)}</DropdownItem>
+                                    <DropdownItem key='niutrans'>{t(`config.translate.niutrans`)}</DropdownItem>
                                     <DropdownItem key='google'>{t(`config.translate.google`)}</DropdownItem>
+                                    <DropdownItem key='bing'>{t(`config.translate.bing`)}</DropdownItem>
+                                    <DropdownItem key='yandex'>{t(`config.translate.yandex`)}</DropdownItem>
                                     <DropdownItem key='local'>{t(`config.translate.local`)}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -147,6 +154,17 @@ export default function Translate() {
                                     <DropdownItem key='disable'>{t('config.translate.disable')}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3>{t('config.translate.history_disable')}</h3>
+                        {historyDisable !== null && (
+                            <Switch
+                                isSelected={historyDisable}
+                                onValueChange={(v) => {
+                                    setHistoryDisable(v);
+                                }}
+                            />
                         )}
                     </div>
                     <div className='config-item'>
@@ -197,6 +215,33 @@ export default function Translate() {
             </Card>
             <Card>
                 <CardBody>
+                    {/* <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.font_size.title')}</h3>
+                        {translateFontSize !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant='bordered'>
+                                        {t(`config.translate.font_size.${translateFontSize}`)}
+                                    </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='window position'
+                                    className='max-h-[50vh] overflow-y-auto'
+                                    onAction={(key) => {
+                                        setTranslateFontSize(key);
+                                    }}
+                                >
+                                    <DropdownItem key={10}>{t(`config.translate.font_size.10`)}</DropdownItem>
+                                    <DropdownItem key={12}>{t(`config.translate.font_size.12`)}</DropdownItem>
+                                    <DropdownItem key={14}>{t(`config.translate.font_size.14`)}</DropdownItem>
+                                    <DropdownItem key={16}>{t(`config.translate.font_size.16`)}</DropdownItem>
+                                    <DropdownItem key={18}>{t(`config.translate.font_size.18`)}</DropdownItem>
+                                    <DropdownItem key={20}>{t(`config.translate.font_size.20`)}</DropdownItem>
+                                    <DropdownItem key={24}>{t(`config.translate.font_size.24`)}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div> */}
                     <div className='config-item'>
                         <h3 className='my-auto mx-0'>{t('config.translate.window_position')}</h3>
                         {windowPosition !== null && (
@@ -224,6 +269,28 @@ export default function Translate() {
                                 isSelected={rememberWindowSize}
                                 onValueChange={(v) => {
                                     setRememberWindowSize(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.close_on_blur')}</h3>
+                        {closeOnBlur !== null && (
+                            <Switch
+                                isSelected={closeOnBlur}
+                                onValueChange={(v) => {
+                                    setCloseOnBlur(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.always_on_top')}</h3>
+                        {alwaysOnTop !== null && (
+                            <Switch
+                                isSelected={alwaysOnTop}
+                                onValueChange={(v) => {
+                                    setAlwaysOnTop(v);
                                 }}
                             />
                         )}

@@ -6,14 +6,14 @@
             "save": "Salvar",
             "write_clipboard": "Escrever na Área de Transferência",
             "plugin": "Plugin",
-            "coming": "Em breve..."
+            "coming": "Em breve…",
+            "clear": "Claro"
         },
         "languages": {
             "auto": "Detectar Automaticamente",
             "zh_cn": "Chinês Simplificado",
             "zh_tw": "Chinês Tradicional",
-            "yue": "Cantonês",
-            "ja": "Japonês ",
+            "ja": "Japonês",
             "en": "Inglês",
             "ko": "Coreano",
             "fr": "Francês",
@@ -32,7 +32,15 @@
             "hi": "Hindu",
             "mn_mo": "Mongolês",
             "mn_cy": "Mongolês (Cirílico)",
-            "km": "Khmer"
+            "km": "Khmer",
+            "nb_no": "Bokmål Norueguês",
+            "nn_no": "Norueguês Nynorsk",
+            "fa": "Persa",
+            "nl": "Holandês",
+            "sv": "Sueco",
+            "pl": "Polonês",
+            "uk": "Ucraniano",
+            "he": "Hebreu"
         },
         "config": {
             "general": {
@@ -40,34 +48,48 @@
                 "title": "Configurações Gerais",
                 "auto_start": "Iniciar Automaticamente",
                 "check_update": "Checar por Atualização",
-                "server_port": "Escutar Porta",
-                "server_port_change": "A porta de escuta foi alterada. Reinicie o aplicativo para que as alterações tenham efeito.",
-                "app_language": "Idioma do Aplicativo",
+                "server_port": "Porta de Escuta",
+                "server_port_change": "A porta de escuta foi alterada. Reinicie o aplicativo para que as alterações tenham efeito",
+                "app_language": "Idioma de Exibição",
                 "app_theme": "Tema",
+                "font_size": {
+                    "14": "Pequena (14px)",
+                    "title": "Tamanho da Fonte",
+                    "24": "Extragrande (24px)",
+                    "20": "Muito Grande (20px)",
+                    "12": "Muito Pequena (12px)",
+                    "16": "Padrão (16px)",
+                    "10": "Extra pequeno (10px)",
+                    "18": "Grande (18px)"
+                },
                 "theme": {
-                    "light": "Claro",
+                    "light": "Luz",
                     "dark": "Escuro",
                     "system": "Sistema"
                 },
-                "transparent": "Efeito transparente.",
-                "change_transparent": "Efeito de transparência será aplicado após reiniciar o software.",
+                "transparent": "Efeito de Transparência",
                 "proxy": {
                     "title": "Proxy",
                     "host": "Host",
                     "port": "Porta",
                     "username": "Nome de usuário",
-                    "password": "Senha"
+                    "password": "Senha",
+                    "no_proxy": "Sem Proxy"
                 },
-                "proxy_change": "O proxy foi alterado. Reinicie o aplicativo para que as alterações tenham efeito.",
-                "proxy_error": "Por favor preencha o host e a porta.",
+                "proxy_change": "O proxy foi alterado. Reinicie o aplicativo para que as alterações tenham efeito",
+                "proxy_error": "Por favor preencha o host e a porta",
                 "tray_click_event": "Evento de Clique na Bandeja",
                 "event": {
-                    "config": "Config",
+                    "config": "Preferência",
                     "translate": "Traduzir",
                     "disable": "Desabilitar",
                     "ocr_recognize": "Reconhecimento de Texto",
                     "ocr_translate": "Tradução de Imagem"
-                }
+                },
+                "default_font": "Padrão",
+                "app_font": "Fonte",
+                "app_fallback_font": "Fonte Reserva",
+                "dev_mode": "Modo de Desenvolvedor"
             },
             "translate": {
                 "label": "Traduzir",
@@ -80,20 +102,38 @@
                 "target": "Destino",
                 "source_target": "Origem+Destino",
                 "disable": "Desabilitar",
-                "incremental_translate": "Traduzir Incrementalmente",
-                "dynamic_translate": "Traduzir Dinamicamente",
+                "history_disable": "Desabilitar Histórico",
+                "incremental_translate": "Tradução Incremental",
+                "dynamic_translate": "Tradução Dinâmica",
                 "delete_newline": "Excluir Nova Linha",
                 "remember_language": "Lembrar do Idioma de Destino",
+                "window_position": "Posição da Janela",
                 "mouse": "Seguir o mouse",
                 "pre_state": "Lembrar posição",
                 "remember_window_size": "Lembrar do Tamanho da Janela",
+                "close_on_blur": "Fechar janela quando o foco for perdido",
+                "always_on_top": "Sempre na Frente",
                 "hide_source": "Ocultar Área de Origem",
                 "hide_language": "Ocultar Área do Idioma",
                 "hide_window": "Ocultar Janela de Tradução",
                 "detect_engine": "Mecanismo de Detecção de Idioma",
                 "baidu": "Baidu",
+                "tencent": "Tencent",
                 "google": "Google",
-                "local": "Local"
+                "local": "Local",
+                "bing": "Bing",
+                "yandex": "Yandex",
+                "niutrans": "NiuTrans",
+                "font_size": {
+                    "14": "Pequena (14px)",
+                    "title": "Tamanho da Fonte",
+                    "24": "Muito, Muito Grande (24px)",
+                    "20": "Muito Grande (20px)",
+                    "12": "Muito Pequena (12px)",
+                    "16": "Padrão (16px)",
+                    "10": "Muito, Muito Pequena (10px)",
+                    "18": "Grande (18px)"
+                }
             },
             "recognize": {
                 "label": "Reconhecimento",
@@ -101,17 +141,19 @@
                 "language": "Idioma de Reconhecimento",
                 "delete_newline": "Excluir Nova Linha Automaticamente",
                 "auto_copy": "Copiar Automaticamente",
-                "hide_window": "Ocultar Janela de Reconhecimento"
+                "hide_window": "Ocultar Janela de Reconhecimento",
+                "close_on_blur": "Fechar janela quando o foco for perdido"
             },
             "hotkey": {
                 "label": "Atalho",
                 "title": "Configurações de Atalhos",
-                "selection_translate": "Traduzir Seleção",
-                "input_translate": "Traduzir Entrada",
+                "selection_translate": "Traduzir Selecionado",
+                "input_translate": "Tradução do Texto",
                 "ocr_recognize": "Reconhecimento de Texto",
                 "ocr_translate": "Tradução de Imagem",
-                "is_register": "O atalho já está registrado.",
-                "success": "Atalho registrado com sucesso"
+                "is_register": "O atalho já está registrado",
+                "success": "Atalho registrado com sucesso",
+                "set_hotkey": "Pressione para Definir a Tecla de Atalho"
             },
             "service": {
                 "label": "Serviço",
@@ -120,14 +162,15 @@
                 "tts": "TTS",
                 "recognize": "Reconhecimento",
                 "collection": "Coleção",
-                "least": "Por favor, mantenha pelo menos um.",
-                "add_buildin_service": "Adicionar Serviço Integrado",
+                "least": "Por favor, mantenha pelo menos um",
+                "add_builtin_service": "Adicionar Serviço Integrado",
                 "add_external_service": "Adicionar Extensão",
                 "add_service": "Adicionar Serviço",
                 "test_failed": "Teste Falhou",
                 "install_plugin": "Instalar Plug-in",
                 "uninstall_success": "Plug-in desinstalado com sucesso",
-                "homepage": "Homepage"
+                "homepage": "Homepage",
+                "view_plugin_list": "Exibir Lista de Plugins"
             },
             "history": {
                 "label": "Histórico",
@@ -140,21 +183,25 @@
                 "webdav": "WebDav",
                 "local": "Local",
                 "webdav_url": "URL do WebDav",
-                "username": "Nome de Usuário",
+                "username": "Nome de usuário",
                 "password": "Senha",
                 "backup": "Backup",
                 "restore": "Restaurar",
                 "list": "Lista de Backup",
                 "load_success": "Carregar Backup com Sucesso",
                 "backup_success": "Backup com Sucesso",
-                "empty": "Você não fez backup ainda"
+                "empty": "Você não fez backup ainda",
+                "logout": "Sair",
+                "login_success": "Entrou com sucesso",
+                "aliyun_login_first": "Por favor, leia o código para fazer login primeiro.",
+                "aliyun": "Aliyun Drive"
             },
             "about": {
                 "label": "Sobre",
                 "title": "Sobre o Aplicativo",
                 "website": "Website",
-                "github": "Github",
-                "feedback": "Feedback",
+                "github": "GitHub",
+                "feedback": "Realimentação",
                 "issue": "Problemas",
                 "email": "Email",
                 "community": "Comunidade",
@@ -169,17 +216,18 @@
         },
         "updater": {
             "title": "Checar por Atualização",
-            "latest": "## A versão mais recente está instalada.",
+            "latest": "## A versão mais recente está instalada",
             "progress": "Progresso do Download",
             "update": "Atualizar",
-            "downloading": "Baixando...",
-            "installing": "Instalando...",
+            "downloading": "Baixando…",
+            "installing": "Instalando…",
             "cancel": "Cancelar",
-            "installed": "Instalação Completa, reinicie o aplicativo para que as alterações tenham efeito"
+            "installed": "Instalação concluída, reinicie o aplicativo para que as alterações entrem em vigor"
         },
         "services": {
             "help": "Guia de Configuração",
             "no_need": "Nenhuma Configuração Requerida",
+            "instance_name": "Nome da configuração",
             "translate": {
                 "deepl": {
                     "title": "DeepL",
@@ -192,7 +240,10 @@
                 },
                 "google": {
                     "title": "Google",
-                    "custom_url": "URL personalizado"
+                    "custom_url": "URL personalizada"
+                },
+                "lingva": {
+                    "title": "Lingva"
                 },
                 "bing": {
                     "title": "Bing"
@@ -203,24 +254,23 @@
                     "openai": "OpenAI",
                     "azure": "Azure",
                     "request_path": "Caminho do Pedido",
-                    "api_key": "Chave de API",
+                    "api_key": "Api Key",
                     "model": "Modelo",
                     "stream": "Modo de Stream",
-                    "system_prompt": "Prompt do Sistema",
-                    "user_prompt": "Prompt do Usuário",
-                    "prompt_description": "Ao personalizar o Prompt, você pode personalizar o comportamento do OpenAI. $text $from $to será substituído pelo texto a ser traduzido, idioma de origem e idioma de destino."
+                    "prompt_description": "Ao personalizar o Prompt, você pode personalizar o comportamento do OpenAI. $text $from $to $detect será substituído pelo texto a ser traduzido, idioma de origem, idioma de destino e idioma detectado.",
+                    "add": "Adicionar Prompt"
                 },
                 "yandex": {
                     "title": "Yandex"
                 },
                 "transmart": {
                     "title": "TranSmart",
-                    "username": "Nome de Usuário",
+                    "username": "Nome de usuário",
                     "token": "Token"
                 },
                 "baidu": {
                     "title": "Baidu",
-                    "appid": "AppID",
+                    "appid": "ID do App",
                     "secret": "Segredo"
                 },
                 "baidu_field": {
@@ -233,14 +283,14 @@
                     "academic": "Papéis Acadêmicos",
                     "aerospace": "Aeroespacial",
                     "wiki": "Ciências sociais e humanas",
-                    "news": "Notícias e informações.",
-                    "law": "Legislação e Regulamentação.",
-                    "contract": "Contrato."
+                    "news": "Notícias e informações",
+                    "law": "Legislação e Regulamentação",
+                    "contract": "Contrato"
                 },
                 "alibaba": {
                     "title": "Alibaba",
-                    "accesskey_id": "AccessKey ID",
-                    "accesskey_secret": "AccessKey Secret"
+                    "accesskey_id": "ID da Chave de Acesso",
+                    "accesskey_secret": "Segredo da Chave de Acesso"
                 },
                 "tencent": {
                     "title": "Tencent",
@@ -249,38 +299,81 @@
                 },
                 "volcengine": {
                     "title": "VolcEngine",
-                    "appid": "AppID",
+                    "appid": "ID do App",
                     "secret": "Segredo"
                 },
                 "niutrans": {
                     "title": "NiuTrans",
                     "https": "Usando Https",
-                    "apikey": "Chave de API"
+                    "apikey": "Chave API"
                 },
                 "youdao": {
                     "title": "Youdao",
                     "appkey": "ID do App",
                     "key": "Chave"
+                },
+                "bing_dict": {
+                    "title": "Bing Dicionário"
+                },
+                "cambridge_dict": {
+                    "title": "Cambridge Dicionário"
+                },
+                "caiyun": {
+                    "title": "Caiyun",
+                    "token": "Token"
+                },
+                "chatglm": {
+                    "title": "ChatGLM",
+                    "api_key": "Chave Api",
+                    "chatglm_lite": "ChatGLM Lite",
+                    "chatglm_pro": "ChatGLM Pro",
+                    "model": "Modelo",
+                    "chatglm_std": "ChatGLM Std",
+                    "add": "Adicionar Prompt",
+                    "prompt_description": "Ao personalizar o Prompt, você pode personalizar o comportamento da IA. $text $from $to $detect será substituído pelo texto a ser traduzido, o idioma de origem, o idioma de destino e o idioma detectado.",
+                    "chatglm_turbo": "ChatGLM Turbo"
+                },
+                "geminipro": {
+                    "add": "Adicionar Prompt",
+                    "api_key": "Chave Api",
+                    "stream": "Modo Stream",
+                    "prompt_description": "Ao personalizar o Prompt, você pode personalizar o comportamento do Gemini Pro. $text $from $to $detect será substituído pelo texto a ser traduzido, idioma de origem, idioma de destino e idioma detectado.",
+                    "title": "Gemini Pro",
+                    "request_path": "Caminho de Solicitação"
+                },
+                "ollama": {
+                    "install_ollama": "Não foi possível conectar-se ao ollama local. Baixe, instale e inicie o ollama primeiro. Se você usar ollama que não está nesta máquina, altere o endereço da solicitação.",
+                    "install_ollama_link": "Baixar Ollama",
+                    "title": "Ollama",
+                    "request_path": "Caminho da Solicitação",
+                    "add": "Adicionar Prompt",
+                    "model": "Modelo",
+                    "supported_models": "Clique para ver uma lista de modelos disponíveis da Ollama",
+                    "install_model": "Instalar",
+                    "stream": "Modo Stream",
+                    "ready": "Pronto",
+                    "not_installed": "Este modelo ainda não foi instalado, clique para baixar e instalar agora",
+                    "prompt_description": "Ao personalizar o Prompt, você pode personalizar o comportamento da IA. $text $from $to $detect será substituído pelo texto a ser traduzido, idioma de origem, idioma de destino e idioma detectado."
+                },
+                "ecdict": {
+                    "title": "ECDict(Online)"
                 }
             },
             "recognize": {
                 "system": {
                     "title": "OCR do Sistema"
                 },
-                "paddle": {
-                    "title": "OCR da Paddle"
-                },
                 "tesseract": {
                     "title": "Tesseract.js"
                 },
                 "baidu_ocr": {
                     "title": "OCR da Baidu",
-                    "client_id": "Chave de API",
+                    "client_id": "Chave API",
                     "client_secret": "Chave Secreta"
                 },
                 "baidu_accurate_ocr": {
                     "title": "Baidu OCR (Preciso)",
-                    "client_id": "Chave de API",
+                    "client_id": "Chave API",
                     "client_secret": "Chave Secreta"
                 },
                 "baidu_img_ocr": {
@@ -292,19 +385,19 @@
                     "title": "OCR da iFlyTek",
                     "appid": "ID do App",
                     "apisecret": "Segredo da API",
-                    "apikey": "Chave de API"
+                    "apikey": "Chave API"
                 },
                 "iflytek_intsig_ocr": {
                     "title": "OCR da iFlyTek (Intsig)",
                     "appid": "ID do App",
                     "apisecret": "Segredo da API",
-                    "apikey": "Chave de API"
+                    "apikey": "Chave API"
                 },
                 "iflytek_latex_ocr": {
                     "title": "iFlyTek LaTeX",
                     "appid": "ID do App",
                     "apisecret": "Segredo da API",
-                    "apikey": "Chave de API"
+                    "apikey": "Chave API"
                 },
                 "simple_latex_ocr": {
                     "title": "LaTeX Simples",
@@ -360,11 +453,20 @@
         "translate": {
             "translate": "Traduzir",
             "add_collection_success": "Adicionar à coleção com sucesso",
-            "recognizing": "Reconhecendo..."
+            "recognizing": "Reconhecendo…",
+            "speak": "Falar",
+            "copy": "Copiar",
+            "delete_newline": "Excluir Quebra de Linha",
+            "translate_back": "Tradução de volta ao original",
+            "retry": "Tentar novamente"
         },
         "recognize": {
             "recognize": "Reconhecimento",
-            "translate": "Traduzir"
+            "translate": "Traduzir",
+            "copy_img": "Copiar imagem",
+            "copy_text": "Copiar",
+            "delete_newline": "Excluir Quebra de Linha",
+            "delete_space": "Excluir Espaço"
         }
     }
 }

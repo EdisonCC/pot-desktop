@@ -4,8 +4,8 @@ use crate::error::Error;
 use crate::StringWrapper;
 use crate::APP;
 use log::{error, info};
-use serde_json::Value;
-use std::collections::HashMap;
+use serde_json::{json, Value};
+use std::io::Read;
 use tauri::Manager;
 
 #[tauri::command]
@@ -28,8 +28,16 @@ pub fn cut_image(left: u32, top: u32, width: u32, height: u32, app_handle: tauri
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
     app_cache_dir_path.push(&app_handle.config().tauri.bundle.identifier);
     app_cache_dir_path.push("pot_screenshot.png");
-
-    let mut img = image::open(&app_cache_dir_path).unwrap();
+    if !app_cache_dir_path.exists() {
+        return;
+    }
+    let mut img = match image::open(&app_cache_dir_path) {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{:?}", e.to_string());
+            return;
+        }
+    };
     let img2 = img.sub_image(left, top, width, height);
     app_cache_dir_path.pop();
     app_cache_dir_path.push("pot_screenshot_cut.png");
@@ -50,9 +58,18 @@ pub fn get_base64(app_handle: tauri::AppHandle) -> String {
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
     app_cache_dir_path.push(&app_handle.config().tauri.bundle.identifier);
     app_cache_dir_path.push("pot_screenshot_cut.png");
+    if !app_cache_dir_path.exists() {
+        return "".to_string();
+    }
     let mut file = File::open(app_cache_dir_path).unwrap();
     let mut vec = Vec::new();
-    file.read_to_end(&mut vec).unwrap();
+    match file.read_to_end(&mut vec) {
+        Ok(_) => {}
+        Err(e) => {
+            error!("{:?}", e.to_string());
+            return "".to_string();
+        }
+    }
     let base64 = general_purpose::STANDARD.encode(&vec);
     base64.replace("\r\n", "")
 }
@@ -61,7 +78,7 @@ pub fn get_base64(app_handle: tauri::AppHandle) -> String {
 pub fn copy_img(app_handle: tauri::AppHandle, width: usize, height: usize) -> Result<(), Error> {
     use arboard::{Clipboard, ImageData};
     use dirs::cache_dir;
-    use image::io::Reader as ImageReader;
+    use image::ImageReader;
     use std::borrow::Cow;
 
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
@@ -78,110 +95,6 @@ pub fn copy_img(app_handle: tauri::AppHandle, width: usize, height: usize) -> Re
     Ok(result)
 }
 
-#[tauri::command(async)]
-pub fn invoke_plugin(
-    app_handle: tauri::AppHandle,
-    plugin_type: &str,
-    name: &str,
-    text: Option<&str>,
-    base64: Option<&str>,
-    from: Option<&str>,
-    to: Option<&str>,
-    lang: Option<&str>,
-    needs: HashMap<String, String>,
-) -> Result<Value, String> {
-    use dirs::config_dir;
-    use libloading;
-    use std::env::consts::OS;
-
-    let ext_name = match OS {
-        "linux" => ".so",
-        "macos" => ".dylib",
-        "windows" => ".dll",
-        _ => return Err("Unknown OS".to_string()),
-    };
-    let config_path = config_dir().unwrap();
-    let config_path = config_path.join(app_handle.config().tauri.bundle.identifier.clone());
-    let config_path = config_path.join("plugins");
-    let config_path = config_path.join(plugin_type);
-    let config_path = config_path.join(name);
-    let plugin_path = config_path.join(format!("plugin{ext_name}"));
-    info!("Load plugin from: {:?}", plugin_path);
-    unsafe {
-        let lib = libloading::Library::new(plugin_path).unwrap();
-        match plugin_type {
-            "translate" => {
-                let func: libloading::Symbol<
-                    fn(
-                        &str,
-                        &str,
-                        &str,
-                        HashMap<String, String>,
-                    ) -> Result<Value, Box<dyn std::error::Error>>,
-                > = match lib.get(b"translate") {
-                    Ok(v) => v,
-                    Err(e) => return Err(e.to_string()),
-                };
-                match func(text.unwrap(), from.unwrap(), to.unwrap(), needs) {
-                    Ok(v) => Ok(v),
-                    Err(e) => Err(e.to_string()),
-                }
-            }
-            "tts" => {
-                let func: libloading::Symbol<
-                    fn(
-                        &str,
-                        &str,
-                        HashMap<String, String>,
-                    ) -> Result<Value, Box<dyn std::error::Error>>,
-                > = match lib.get(b"tts") {
-                    Ok(v) => v,
-                    Err(e) => return Err(e.to_string()),
-                };
-                match func(text.unwrap(), lang.unwrap(), needs) {
-                    Ok(v) => Ok(v),
-                    Err(e) => Err(e.to_string()),
-                }
-            }
-            "recognize" => {
-                let func: libloading::Symbol<
-                    fn(
-                        &str,
-                        &str,
-                        HashMap<String, String>,
-                    ) -> Result<Value, Box<dyn std::error::Error>>,
-                > = match lib.get(b"recognize") {
-                    Ok(v) => v,
-                    Err(e) => return Err(e.to_string()),
-                };
-                match func(base64.unwrap(), lang.unwrap(), needs) {
-                    Ok(v) => Ok(v),
-                    Err(e) => Err(e.to_string()),
-                }
-            }
-            "collection" => {
-                let func: libloading::Symbol<
-                    fn(
-                        &str,
-                        &str,
-                        HashMap<String, String>,
-                    ) -> Result<Value, Box<dyn std::error::Error>>,
-                > = match lib.get(b"collection") {
-                    Ok(v) => v,
-                    Err(e) => return Err(e.to_string()),
-                };
-                match func(from.unwrap(), to.unwrap(), needs) {
-                    Ok(v) => Ok(v),
-                    Err(e) => Err(e.to_string()),
-                }
-            }
-            _ => {
-                return Err("Unknown Plugin Type".to_string());
-            }
-        }
-    }
-}
-
 #[tauri::command]
 pub fn set_proxy() -> Result<bool, ()> {
     let host = match get("proxy_host") {
@@ -192,12 +105,16 @@ pub fn set_proxy() -> Result<bool, ()> {
         Some(v) => v.as_i64().unwrap(),
         None => return Err(()),
     };
+    let no_proxy = match get("no_proxy") {
+        Some(v) => v.as_str().unwrap().to_string(),
+        None => return Err(()),
+    };
     let proxy = format!("http://{}:{}", host, port);
 
     std::env::set_var("http_proxy", &proxy);
     std::env::set_var("https_proxy", &proxy);
     std::env::set_var("all_proxy", &proxy);
-    std::env::set_var("no_proxy", "127.0.0.1,localhost,aliyuncs.com");
+    std::env::set_var("no_proxy", &no_proxy);
     Ok(true)
 }
 
@@ -211,16 +128,9 @@ pub fn unset_proxy() -> Result<bool, ()> {
 }
 
 #[tauri::command]
-pub fn install_plugin(path_list: Vec<String>, plugin_type: &str) -> Result<i32, Error> {
+pub fn install_plugin(path_list: Vec<String>) -> Result<i32, Error> {
     let mut success_count = 0;
-    use std::env::consts::OS;
 
-    let ext_name = match OS {
-        "linux" => ".so",
-        "macos" => ".dylib",
-        "windows" => ".dll",
-        _ => return Err(Error::Error("Unknown OS".into())),
-    };
     for path in path_list {
         if !path.ends_with("potext") {
             continue;
@@ -228,10 +138,28 @@ pub fn install_plugin(path_list: Vec<String>, plugin_type: &str) -> Result<i32, 
         let path = std::path::Path::new(&path);
         let file_name = path.file_name().unwrap().to_str().unwrap();
         let file_name = file_name.replace(".potext", "");
-        if !file_name.starts_with("[plugin]") {
+        if !file_name.starts_with("plugin") {
             return Err(Error::Error(
-                "Invalid Plugin: file name must start with [plugin]".into(),
+                "Invalid Plugin: file name must start with plugin".into(),
             ));
+        }
+
+        let mut zip = zip::ZipArchive::new(std::fs::File::open(path)?)?;
+        #[allow(unused_mut)]
+        let mut plugin_type: String;
+        if let Ok(mut info) = zip.by_name("info.json") {
+            let mut content = String::new();
+            info.read_to_string(&mut content)?;
+            let json: serde_json::Value = serde_json::from_str(&content)?;
+            plugin_type = json["plugin_type"]
+                .as_str()
+                .ok_or(Error::Error("can't find plugin type in info.json".into()))?
+                .to_string();
+        } else {
+            return Err(Error::Error("Invalid Plugin: miss info.json".into()));
+        }
+        if zip.by_name("main.js").is_err() {
+            return Err(Error::Error("Invalid Plugin: miss main.js".into()));
         }
         let config_path = dirs::config_dir().unwrap();
         let config_path =
@@ -240,17 +168,60 @@ pub fn install_plugin(path_list: Vec<String>, plugin_type: &str) -> Result<i32, 
         let config_path = config_path.join(plugin_type);
         let plugin_path = config_path.join(file_name);
         std::fs::create_dir_all(&config_path)?;
-        let mut zip = zip::ZipArchive::new(std::fs::File::open(path)?)?;
-        if zip.by_name("info.json").is_err() {
-            return Err(Error::Error("Invalid Plugin: miss info.json".into()));
-        }
-        if zip.by_name(format!("plugin{ext_name}").as_str()).is_err() {
-            return Err(Error::Error(
-                format!("Invalid Plugin: miss plugin{ext_name}").into(),
-            ));
-        }
-        zip.extract(plugin_path)?;
+        zip.extract(&plugin_path)?;
+
         success_count += 1;
     }
     Ok(success_count)
+}
+
+#[tauri::command]
+pub fn run_binary(
+    plugin_type: String,
+    plugin_name: String,
+    cmd_name: String,
+    args: Vec<String>,
+) -> Result<Value, Error> {
+    #[cfg(target_os = "windows")]
+    use std::os::windows::process::CommandExt;
+    use std::process::Command;
+
+    let config_path = dirs::config_dir().unwrap();
+    let config_path = config_path.join(APP.get().unwrap().config().tauri.bundle.identifier.clone());
+    let config_path = config_path.join("plugins");
+    let config_path = config_path.join(plugin_type);
+    let plugin_path = config_path.join(plugin_name);
+
+    #[cfg(target_os = "windows")]
+    let mut cmd = Command::new("cmd");
+    #[cfg(target_os = "windows")]
+    let cmd = cmd.creation_flags(0x08000000);
+    #[cfg(target_os = "windows")]
+    let cmd = cmd.args(["/c", &cmd_name]);
+    #[cfg(not(target_os = "windows"))]
+    let mut cmd = Command::new(&cmd_name);
+
+    let output = cmd.args(args).current_dir(plugin_path).output()?;
+    Ok(json!({
+        "stdout": String::from_utf8_lossy(&output.stdout).to_string(),
+        "stderr": String::from_utf8_lossy(&output.stderr).to_string(),
+        "status": output.status.code().unwrap_or(-1),
+    }))
+}
+
+#[tauri::command]
+pub fn font_list() -> Result<Vec<String>, Error> {
+    use font_kit::source::SystemSource;
+    let source = SystemSource::new();
+
+    Ok(source.all_families()?)
+}
+
+#[tauri::command]
+pub fn open_devtools(window: tauri::Window) {
+    if !window.is_devtools_open() {
+        window.open_devtools();
+    } else {
+        window.close_devtools();
+    }
 }
